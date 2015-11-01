@@ -1,0 +1,35 @@
+{
+  "name": "CWD3",
+  "version": "0.2.1",
+  "description": "CWD3 - CrystalWalk analysis",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "author": "Rafael Moraes",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gvcm/CWD3"
+  },
+  "keywords": [
+    "cwd3",
+    "crystalwalk",
+    "analysis"
+  ],
+  "dependencies": {
+    "express": "^4.13.3"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-connect": "^2.2.0",
+    "gulp-babel": "^6.0.0",
+    "gulp-concat": "^2.6.0",
+    "gulp-sourcemaps": "^1.6.0",
+    "gulp-uglify": "^1.4.2",
+    "d3": "^3.5.6"
+  },
+  "engines": {
+    "node": "5.0.0"
+  }
+}
