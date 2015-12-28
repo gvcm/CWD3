@@ -86,13 +86,13 @@ var createNode = function(row) {
 
 var clusterNodes = function(alpha) {
   return function(d) {
-    d.x = d.x + (viewCenterH - d.x) * alpha / 50.0;
-    d.y = d.y + (viewCenterV - d.y) * alpha / 50.0;
+    d.x = d.x + (viewCenterH - d.x) * (alpha / 100.0);
+    d.y = d.y + (viewCenterV - d.y) * (alpha / 100.0);
   };
 };
 
 var nodeCharge = function(d) {
-  return -d.value * 5;
+  return -d.radius * 10;
 };
 
 d3.csv('data/research.csv', function(data) {
@@ -117,7 +117,7 @@ d3.csv('data/research.csv', function(data) {
   force.nodes(nodes);
   force.size([viewWidth, viewHeight]);
   force.charge(nodeCharge);
-  force.gravity(0.1);
+  force.gravity(0.15);
   force.on('tick', function(e) {
     circles.each(clusterNodes(e.alpha));
     circles
