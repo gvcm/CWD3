@@ -65,35 +65,31 @@ var viewCenterH = viewWidth / 2.0;
 var viewHeight = $(window).height() - $view.position().top;
 var viewCenterV = viewHeight / 2.0;
 
-var svg = d3.select('#view').append('svg');
-svg.attr('width', viewWidth);
-svg.attr('height', viewHeight);
+var svg = d3.select('#view').append('svg')
+  .attr('width', viewWidth)
+  .attr('height', viewHeight);
 
-var nodeScale = d3.scale.sqrt();
-nodeScale.domain([0, 100]);
-nodeScale.range([5, 5 + (Math.sqrt(100 / Math.PI) * 10)]);
-
-var nodes = [];
+var nodeScale = d3.scale.sqrt()
+  .domain([0, 100])
+  .range([5, 5 + (Math.sqrt(100 / Math.PI) * 10)]);
 
 var fillColor = d3.scale.ordinal()
   .domain(['CW', 'T', 'L', 'F2', 'F1', 'Z', 'C', 'D'])
   .range(['#d3372c', '#2767b3', '#85898f', '#e89e78', '#3f9657', '#b3c841','#efb052', '#5d3b5a']);
 
-var force;
-var groups;
-var specGroup;
-
-var slice = viewWidth / 15;
-var groupAlignH = {
-  'CW': slice * 5,
-  'T':  slice * 6,
-  'L':  slice * 7,
-  'F2': slice * 8,
-  'F1': slice * 9,
-  'Z':  slice * 10,
-  'C':  slice * 11,
-  'D':  slice * 12
-};
+var sliceH = viewWidth / 15;
+var groupAlignH = d3.scale.ordinal()
+  .domain(['CW', 'T', 'L', 'F2', 'F1', 'Z', 'C', 'D'])
+  .range([
+    sliceH * 5,
+    sliceH * 6,
+    sliceH * 7,
+    sliceH * 8,
+    sliceH * 9,
+    sliceH * 10,
+    sliceH * 11,
+    sliceH * 12
+  ]);
 
 var createRecord = function(row) {
   var scoreN = parseInt(row.scoreN);
@@ -128,7 +124,7 @@ var clusterAll = function(alpha) {
 
 var clusterGroup = function(alpha) {
   return function(d) {
-    var targetH = groupAlignH[d.group];
+    var targetH = groupAlignH(d.group);
     d.x = d.x + (targetH - d.x) * alpha;
     d.y = d.y + (viewCenterV - d.y) * (alpha / 2);
   };
@@ -142,6 +138,13 @@ var explode = function(alpha) {
     if(d.y < -500)             { d.y = -500; }
   };
 };
+
+
+var nodes = [];
+var force;
+var groups;
+var specGroup;
+
 
 d3.csv('data/research.csv', function(data) {
 
