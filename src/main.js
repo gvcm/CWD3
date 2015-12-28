@@ -78,6 +78,7 @@ var createNode = function(row) {
   var node = {
     radius: nodeScale(scoreN),
     value: scoreN,
+    reference: row.reference,
     group: row.group ? row.group : 'default',
     x: Math.random() * viewWidth,
     y: Math.random() * viewHeight
@@ -123,7 +124,7 @@ d3.csv('data/research.csv', function(data) {
     .attr("dy", "0")
     .attr('opacity', 0)
     .attr('text-anchor', 'middle')
-    .text('X');
+    .text(function(d) { return d.reference; });
 
   circles.transition().duration(3000).attr('r', function(d) { return d.radius; });
   labels.transition().duration(3000).attr('opacity', 1);
