@@ -29,8 +29,8 @@ gulp.task('scripts', function() {
     /* source */
     gulp.src('src/**/*.js')
       .pipe(sourcemaps.init())
-      .pipe(babel())
-      .pipe(uglify())
+      // .pipe(babel())
+      // .pipe(uglify())
 
   ).pipe(concat('build.min.js'))
    .pipe(sourcemaps.write('.'))
