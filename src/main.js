@@ -60,7 +60,9 @@ var definition = {
 
 var $view = $('#view');
 var viewWidth = $view.width();
+var viewCenterH = viewWidth / 2.0;
 var viewHeight = $(window).height() - $view.position().top;
+var viewCenterV = viewHeight / 2.0;
 
 var svg = d3.select('#view').append('svg');
 svg.attr('width', viewWidth);
@@ -82,6 +84,17 @@ var createNode = function(row) {
   nodes.push(node);
 }
 
+var clusterNodes = function(alpha) {
+  return function(d) {
+    d.x = d.x + (viewCenterH - d.x) * alpha / 50.0;
+    d.y = d.y + (viewCenterV - d.y) * alpha / 50.0;
+  };
+};
+
+var nodeCharge = function(d) {
+  return -d.value * 5;
+};
+
 d3.csv('data/research.csv', function(data) {
 
   var specification = data.shift();
@@ -90,13 +103,27 @@ d3.csv('data/research.csv', function(data) {
   
   var circles = svg.selectAll('circle').data(nodes);
   circles.enter().append('circle')
-    .attr('r', 10);
+    .attr('r', 0);
   
   circles
     .attr('cx', function(d) { return d.x; })
     .attr('cy', function(d) { return d.y; })
-    .attr('r', function(d) { return d.radius; });
+
+  circles.transition().duration(5000).attr('r', function(d) { return d.radius; });
     
   circles.exit().remove();
+  
+  var force = d3.layout.force();
+  force.nodes(nodes);
+  force.size([viewWidth, viewHeight]);
+  force.charge(nodeCharge);
+  force.gravity(0.1);
+  force.on('tick', function(e) {
+    circles.each(clusterNodes(e.alpha));
+    circles
+      .attr('cx', function(d) { return d.x; })
+      .attr('cy', function(d) { return d.y; });
+  });
+  force.start();
 
 });
