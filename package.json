@@ -21,13 +21,14 @@
     "express": "^4.13.3"
   },
   "devDependencies": {
+    "d3": "^3.5.12",
     "gulp": "^3.9.0",
-    "gulp-connect": "^2.3.1",
     "gulp-babel": "^6.0.0",
     "gulp-concat": "^2.6.0",
+    "gulp-connect": "^2.3.1",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-uglify": "^1.5.1",
-    "d3": "^3.5.12"
+    "merge2": "^0.3.6"
   },
   "engines": {
     "node": "5.3.0",

@@ -4,6 +4,7 @@ var babel = require('gulp-babel');
 var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
 var connect = require('gulp-connect');
+var merge2 = require('merge2');
 
 gulp.task('connect', function() {
   connect.server({
@@ -18,13 +19,20 @@ gulp.task('html', function () {
 });
 
 gulp.task('scripts', function() {
-  return gulp.src('src/**/*.js')
-    .pipe(sourcemaps.init())
-    .pipe(babel())
-    .pipe(concat('build.min.js'))
-    .pipe(uglify())
-    .pipe(sourcemaps.write('.'))
-    .pipe(gulp.dest('public/js'));
+  return merge2(
+    /* node modules */
+    gulp.src([
+      'node_modules/d3/d3.min.js'
+    ]).pipe(sourcemaps.init()),
+    /* source */
+    gulp.src('src/**/*.js')
+      .pipe(sourcemaps.init())
+      .pipe(babel())
+      .pipe(uglify())
+
+  ).pipe(concat('build.min.js'))
+   .pipe(sourcemaps.write('.'))
+   .pipe(gulp.dest('public/js'))
 });
 
 gulp.task('watch', function () {
