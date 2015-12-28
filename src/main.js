@@ -110,7 +110,7 @@ d3.csv('data/research.csv', function(data) {
   var spec = svg.selectAll('.spec').data([specRecord]);
   var specGroup = spec.enter().append('g')
     .attr('opacity', 0)
-    .attr('transform', "translate(" + (viewWidth / 3.0) + "," + (viewHeight / 2.0) + ")");
+    .attr('transform', "translate(" + (viewWidth / 2.0) + "," + (viewHeight / 2.0) + ")");
 
   var specCircle = specGroup.append('circle')
     .attr('r', 0)
@@ -152,7 +152,7 @@ d3.csv('data/research.csv', function(data) {
   
   var force = d3.layout.force();
   force.nodes(nodes);
-  force.size([viewWidth / 3.0 * 2.0, viewHeight]);
+  force.size([viewWidth / 4.0 * 3.0, viewHeight]);
   force.charge(nodeCharge);
   force.gravity(0.2);
   var counter = 0;
