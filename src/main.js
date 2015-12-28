@@ -86,15 +86,8 @@ var createNode = function(row) {
   nodes.push(node);
 }
 
-var clusterNodes = function(alpha) {
-  return function(d) {
-    d.x = d.x + (viewCenterH - d.x) * (alpha / 100.0);
-    d.y = d.y + (viewCenterV - d.y) * (alpha / 100.0);
-  };
-};
-
 var nodeCharge = function(d) {
-  return -d.radius * 4;
+  return -Math.pow(d.radius, 2.0) / 3;
 };
 
 var fillColor = d3.scale.ordinal()
@@ -107,27 +100,24 @@ d3.csv('data/research.csv', function(data) {
 
   data.forEach(createNode);
 
-  var containers = svg.selectAll('div').data(nodes);
-  var groups = containers.enter().append('g');
-
+  var containers = svg.selectAll('g').data(nodes);
+  var groups = containers.enter().append('g')
+    .attr('opacity', 0);
+  
   var circles = groups.append('circle')
     .attr('r', 0)
     .attr("fill", function(d) { return fillColor(d.group); })
     .attr("stroke-width", 2)
-    .attr("stroke", function(d) { return d3.rgb(fillColor(d.group)).darker() })
-    .attr('cx', function(d) { return d.x; })
-    .attr('cy', function(d) { return d.y; });
+    .attr("stroke", function(d) { return d3.rgb(fillColor(d.group)).darker() });
 
   var labels = groups.append('text')
-    .attr('class', 'text')
     .attr("dx", "0")
-    .attr("dy", "0")
-    .attr('opacity', 0)
+    .attr("dy", "5")
     .attr('text-anchor', 'middle')
     .text(function(d) { return d.reference; });
 
   circles.transition().duration(3000).attr('r', function(d) { return d.radius; });
-  labels.transition().duration(3000).attr('opacity', 1);
+  groups.transition().duration(3000).attr('opacity', 0.9);
     
   containers.exit().remove();
   
@@ -135,16 +125,11 @@ d3.csv('data/research.csv', function(data) {
   force.nodes(nodes);
   force.size([viewWidth, viewHeight]);
   force.charge(nodeCharge);
-  force.gravity(0.1);
+  force.gravity(0.2);
   force.on('tick', function(e) {
-    circles.each(clusterNodes(e.alpha));
-    circles
-      .attr('cx', function(d) { return d.x; })
-      .attr('cy', function(d) { return d.y; });
-    labels
-      .attr('dx', function(d) { return d.x; })
-      .attr('dy', function(d) { return d.y; });
-
+    groups.attr('transform', function(d, i) {
+      return "translate(" + d.x + "," + d.y + ")";
+    });
   });
   force.start();
 
