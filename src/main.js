@@ -70,7 +70,7 @@ svg.attr('height', viewHeight);
 
 var nodeScale = d3.scale.sqrt();
 nodeScale.domain([0, 100]);
-nodeScale.range([0, Math.sqrt(100 / Math.PI) * 10]);
+nodeScale.range([5, 5 + (Math.sqrt(100 / Math.PI) * 10)]);
 
 var nodes = [];
 var createNode = function(row) {
@@ -78,6 +78,7 @@ var createNode = function(row) {
   var node = {
     radius: nodeScale(scoreN),
     value: scoreN,
+    group: row.group ? row.group : 'default',
     x: Math.random() * viewWidth,
     y: Math.random() * viewHeight
   };
@@ -92,8 +93,12 @@ var clusterNodes = function(alpha) {
 };
 
 var nodeCharge = function(d) {
-  return -d.radius * 10;
+  return -d.radius * 4;
 };
+
+var fillColor = d3.scale.ordinal()
+  .domain(['default', 'T', 'L', 'F2', 'F1', 'Z', 'C', 'D'])
+  .range(['#d3372c', '#e89e78', '#efb052', '#5d3b5a', '#2767b3', '#3f9657', '#b3c841', '#85898f']);
 
 d3.csv('data/research.csv', function(data) {
 
@@ -103,13 +108,16 @@ d3.csv('data/research.csv', function(data) {
   
   var circles = svg.selectAll('circle').data(nodes);
   circles.enter().append('circle')
-    .attr('r', 0);
+    .attr('r', 0)
+    .attr("fill", function(d) { return fillColor(d.group); })
+    .attr("stroke-width", 2)
+    .attr("stroke", function(d) { return d3.rgb(fillColor(d.group)).darker() });
   
   circles
     .attr('cx', function(d) { return d.x; })
     .attr('cy', function(d) { return d.y; })
 
-  circles.transition().duration(5000).attr('r', function(d) { return d.radius; });
+  circles.transition().duration(3000).attr('r', function(d) { return d.radius; });
     
   circles.exit().remove();
   
@@ -117,7 +125,7 @@ d3.csv('data/research.csv', function(data) {
   force.nodes(nodes);
   force.size([viewWidth, viewHeight]);
   force.charge(nodeCharge);
-  force.gravity(0.15);
+  force.gravity(0.1);
   force.on('tick', function(e) {
     circles.each(clusterNodes(e.alpha));
     circles
