@@ -134,6 +134,15 @@ var clusterGroup = function(alpha) {
   };
 };
 
+var explode = function(alpha) {
+  return function(d) {
+    if(d.x > viewWidth + 500)  { d.x = viewWidth + 500; }
+    if(d.x < -500)             { d.x = -500; }
+    if(d.y > viewHeight + 500) { d.y = viewHeight + 500; }
+    if(d.y < -500)             { d.y = -500; }
+  };
+};
+
 d3.csv('data/research.csv', function(data) {
 
   var specRecord = createRecord(data.shift());
@@ -216,7 +225,11 @@ $('#all').click(function() {
   });
   force.start();
 
+  groups.transition().duration(1000)
+    .attr('opacity', 0.9);
+
   specGroup.transition().duration(1000)
+    .attr('opacity', 0.9)
     .attr('transform', "translate(" + (viewWidth / 3 * 2) + "," + (viewHeight / 2 + 5) + ")");
   
 });
@@ -234,11 +247,31 @@ $('#group').click(function() {
   });
   force.start();
 
+  groups.transition().duration(1000)
+    .attr('opacity', 0.9);    
+
   specGroup.transition().duration(1000)
+    .attr('opacity', 0.9)
     .attr('transform', "translate(" + (viewWidth / 6) + "," + viewCenterV + ")");
 
 });
 
-$('#criteria').click(function() {
+$('#score').click(function() {
+  
+  force.gravity(-0.1);
+
+  force.on('tick', function(e) {
+    groups.each(explode(e.alpha));
+    groups.attr('transform', function(d, i) {
+      return "translate(" + d.x + "," + d.y + ")";
+    });
+  });
+  force.start();
+  
+  groups.transition().duration(3000)
+    .attr('opacity', 0);
+
+  specGroup.transition().duration(1000)
+    .attr('opacity', 0);
   
 });
