@@ -111,6 +111,7 @@ fillReference = d3.scale.ordinal()
   .range(['#d3372c', '#3b675f', '#518534', '#3cc242', '#8faa52', '#897797', '#8e3846', '#64a9b2', '#a6bd78', '#7a865c', '#547d69', '#517238', '#694087', '#7964b2', '#a08da7', '#387cbf', '#7ec780', '#c5644f', '#79b849', '#6d9e94', '#74694d', '#784e64', '#b39947', '#c2646b', '#506e68', '#798b54', '#3ba555']);
 
 var criteriaNodes = [];
+var criteriaForce;
 var criteriaGroups = [];
 
 /* ===== FUNCTIONS ===== */
@@ -290,29 +291,37 @@ var criteriaLabel = function(d) {
   return d.reference;
 };
 
-var tableizeCriteriaGroups = function(d, i) {
-  var criteriaIndex = criteriaKeys.indexOf(d.criteria);
-  var numberOfColumns = 4;
-  var groupSize = (viewWidth / 3.0 * 2) / numberOfColumns;
-  var groupH = 0;
-  var groupV = 0;
-  var posH;
-  var posV;
-  var spacing = (viewWidth / 2.0 / 2.0);
-  
-  if (criteriaIndex >= 0) {
-    groupV = Math.floor(criteriaIndex / numberOfColumns);
-    groupH = criteriaIndex % numberOfColumns;
-  }
-  
-  posH = spacing + groupSize * groupH;
-  posV = (spacing / 2.0) + groupSize * groupV;
+var criteriaGravity = function(alpha) {
+  return function(d) {
+    var criteriaIndex = criteriaKeys.indexOf(d.criteria);
+    var numberOfColumns = 3;
+    var spacingH = viewWidth / 2;
+    var spacingV = (viewHeight / 6) * 5; 
+    var groupSize = (viewWidth - spacingH) / numberOfColumns;
+    var groupH = 0;
+    var groupV = 0;
+    var posH;
+    var posV;
 
-  if(posV > viewHeight) {
-    svg.attr('height', posV + (spacing / 2.0));
-  }
-  
-  return "translate(" + posH + "," + posV + ")";
+    if (criteriaIndex >= 0) {
+      groupV = Math.floor(criteriaIndex / numberOfColumns);
+      groupH = criteriaIndex % numberOfColumns;
+    }
+    
+    posH = (spacingH / 1.5) + groupSize * groupH;
+    posV = (spacingV / 2.0) + groupSize * groupV;
+    
+    if(posV > viewHeight) {
+      svg.attr('height', posV + spacingV / 2.0);
+    }
+
+    d.x += (posH - d.x) * alpha;
+    d.y += (posV - d.y) * alpha;    
+  };
+};
+
+var criteriaNodeCharge = function(d) {
+  return -Math.pow(d.radius, 2.0);
 };
 
 /* ===== DATA CALLBACK ===== */
@@ -438,6 +447,11 @@ d3.csv('data/research.csv', function(data) {
     return "translate(" + d.x + "," + d.y + ")";
   });
 
+  criteriaForce = d3.layout.force()
+    .nodes(criteriaNodes)
+    .size([viewWidth, viewHeight])
+    .gravity(0)
+    .charge(criteriaNodeCharge);
 });
 
 /* ====== ALL BUTTON ====== */
@@ -500,8 +514,6 @@ $('#group').click(function() {
     .attr('opacity', 0.9)
     .attr('transform', "translate(" + (viewWidth / 6) + "," + viewCenterV + ")");
 
-  svg.attr('height', viewHeight);
-
 });
 
 /* ====== SCORE BUTTON ====== */
@@ -544,9 +556,16 @@ $('#criteria').click(function() {
 
   scoreGroups.transition().duration(1000)
     .attr('opacity', 0);
-  
-  criteriaGroups.transition().duration(1000)
-    .attr('opacity', 0.9)
-    .attr('transform', tableizeCriteriaGroups);
 
+  criteriaForce.on("tick", function(e) {
+    criteriaGroups
+      .each(criteriaGravity(e.alpha));
+    criteriaGroups.attr('transform', function(d, i) {
+      return "translate(" + d.x + "," + d.y + ")";
+    });
+  });
+  criteriaForce.start();
+
+  criteriaGroups.transition().duration(1000)
+    .attr('opacity', 0.9);
 });
