@@ -69,6 +69,45 @@ var groupDefinitions = {
   'D':  'D - Duplicated'
 };
 
+var scoreDefinitions = {
+  "scoreN": "TOTAL",
+  "score1N": "Score 1",
+  "score2N": "Score 2",
+  "score3N": "Score 3",
+  "score4N": "Score 4",
+  "score5N": "Score 5"
+};
+
+var scoreReferenceDefinitions = {
+  '0': '0',
+  '1': '1',
+  '2': '2',
+  '3': '3',
+  '4': '4',
+  '5': '5',
+  '6': '6',
+  '7': '7',
+  '8': '8',
+  '9': '9',
+  '10': '10',
+  '11': '11',
+  '12': '12',
+  '13': '13',
+  '14': '14',
+  '15': '15',
+  '16': '16',
+  '17': '17',
+  '18': '18',
+  '19': '19',
+  '20': '20',
+  '21': '21',
+  '22': '22',
+  '23': '23',
+  '24': '24',
+  '25': '25',
+  '26': '26'
+};
+
 var $view = $('#view');
 var viewWidth = $(window).width();
 var viewCenterH = viewWidth / 2.0;
@@ -105,11 +144,13 @@ var dataGroupSpecLabel;
 var dataGroupLabels;
 
 var fillScoreColumn = d3.scale.ordinal()
-  .domain([0, 1, 2, 3, 4, 5])
-  .range(['#2767b3', '#85898f', '#e89e78', '#3f9657', '#b3c841','#efb052', '#5d3b5a']);
+  .domain([1, 2, 3, 4, 5])
+  .range(['#e89e78', '#3f9657', '#b3c841','#efb052', '#5d3b5a']);
 
 var scoreNodes = [];
 var scoreGroups = [];
+var scoreGroupLabels;
+var scoreReferenceLabels;
 
 var criteriaKeys = ['1_2_3','1_3_1','1_3','1_5_1','1_5_2','1_6_1','1_6_2','2_1','2_2','2_3','2_4','3_1_1','3_1_2','3_1_3','3_1_4','3_1_5_1','3_1_5_2','3_1_5_3','3_1_5_4','3_2_1','3_2_2','3_2_3','3_2_4','4_1','4_2','4_3_1','4_3_2','4_3_3','4_3_4','4_3_5','5_1','5_2_1','5_2_2','5_2_3','5_2_4','5_3_1','5_3_2','5_3_3','5_4_1','5_4_2'];
 var criteriaKeysLength = criteriaKeys.length;
@@ -185,69 +226,43 @@ var explode = function(alpha) {
   };
 };
 
-var createScoreRecord = function(scoreXN, reference, column) {
+var createScoreRecord = function(row) {
+  var scoreN = parseFloat(row.scoreN);
+  var score1N = parseFloat(row.score1N);
+  var score2N = parseFloat(row.score2N);
+  var score3N = parseFloat(row.score3N);
+  var score4N = parseFloat(row.score4N);
+  var score5N = parseFloat(row.score5N);
+
   return {
-    radius: scoreXN > 0 ? nodeScale(scoreXN) : 0, /* hide score zero */
-    value: scoreXN,
-    reference: reference,
-    column: column,
+    radius: scoreN > 0 ? nodeScale(scoreN) : 0, /* hide score zero */
+    value: scoreN,
+    breakdown: [
+      { radius: (score1N > 0 ? nodeScale(score1N) : 0), value: score1N },
+      { radius: (score2N > 0 ? nodeScale(score2N) : 0), value: score2N },
+      { radius: (score3N > 0 ? nodeScale(score3N) : 0), value: score3N },
+      { radius: (score4N > 0 ? nodeScale(score4N) : 0), value: score4N },
+      { radius: (score5N > 0 ? nodeScale(score5N) : 0), value: score5N }
+    ],
+    reference: row.reference,
     x: Math.random() * viewWidth,
     y: Math.random() * viewHeight
   };
 };
 
-var createScoreRecords = function(row) {
-  var scoreN;
-  var records = [];
-
-  if(!row.reference) {
-    throw "error: row without reference!";
-  }
-
-  scoreN = parseInt(row.scoreN);
-  records.push(createScoreRecord(scoreN, row.reference, 0));
-
-  for(var j=1; j<=5; j++) {
-    scoreN = parseInt(row['score' + j + 'N']);
-    records.push(createScoreRecord(scoreN, row.reference, j));
-  }
-
-  return records;
-};
-
 var createScoreNodes = function(row) {
   if(row.reference) {
-    var scoreRecords = createScoreRecords(row);
-    for(var j=0; j<6; j++) {
-      scoreNodes.push(scoreRecords[j]);
-    }    
+    scoreNodes.push(createScoreRecord(row));
   }
-};
-
-var scoreRadius = function(d) {
-  return d.radius;
-};
-
-var scoreColumnColor = function(d) {
-  return fillScoreColumn(d.column);
-};
-
-var scoreStrokeColor = function(d) {
-  return d3.rgb(scoreColumnColor(d)).darker();
-};
-
-var scoreLabel = function(d) {
-  return d.value > 0 ? d.value : '';
 };
 
 var tableizeScoreGroups = function(d, i) {
   var refNum = parseInt(d.reference);
-  var column = d.column;
   var posH;
   var posV;
 
-  posH = 150 * column + (viewWidth / 4) + (column==0 ? 0 : 150);
-  posV = 100 * refNum + (viewHeight / 3);
+  posH = (viewWidth * 0.25);
+  posV = 100 * (i+1) + 100;
   
   if(posV > viewHeight) {
     svg.attr('height', posV + (viewHeight / 3));
@@ -376,7 +391,7 @@ d3.csv('data/research.csv', function(data) {
     .attr('transform', "translate(" + (viewWidth / 3 * 2) + "," + (viewHeight / 2 + 5) + ")");
 
   dataGroupSpecLabel = svg.append('text')
-    .attr("x", 200)
+    .attr("x", 250)
     .attr("y", 100)
     .attr('text-anchor', 'middle')
     .attr('font-size', 30)
@@ -465,7 +480,6 @@ d3.csv('data/research.csv', function(data) {
     .attr('fill', function(d) { return fillColor(d.key); })
     .text(function(d) { return d.key; });
     
-
   dataGroupContainers.exit().remove();
   
   // groups = containers.enter().append('g')
@@ -492,26 +506,78 @@ d3.csv('data/research.csv', function(data) {
 
   data.forEach(createScoreNodes);
 
+  // console.log(scoreNodes[5]);
+  // var xx = scoreNodes.order(function(a, b){ return d3.ascending(a.value, b.value); });
+  // console.log(xx[5]);
+  // debugger;
+  
+  // scoreNodes.sort(function(a, b) { return d3.ascending(a.value, b.value); })[100].value;
+  
+  scoreNodes.sort(function(a, b) { return d3.descending(a.value, b.value); });  
   var scoreContainers = svg.selectAll('.scores').data(scoreNodes);
   scoreGroups = scoreContainers.enter().append('g')
     .attr('opacity', 0);
-  
-  var scoreCircles = scoreGroups.append('circle')
-    .attr('r', scoreRadius)
-    .attr("fill", scoreColumnColor)
-    .attr("stroke-width", 2)
-    .attr("stroke", scoreStrokeColor);
 
-  var scoreLabels = scoreGroups.append('text')
+  scoreGroups.append('circle')
+    .attr('r', function(d) { return d.radius; })
+    .attr('cx', 0)
+    .attr('cy', 0)
+    .attr("fill", function(d, i) { return (i==0?fillColor('CW'):fillColor('T')); })
+    .attr("stroke-width", 2)
+    .attr("stroke", function(d, i) { return d3.rgb((i==0?fillColor('CW'):fillColor('T'))).darker(); });
+
+  for(j=0;j<5;j++) {
+    scoreGroups.append('circle')
+      .attr('r', function(d) { return d.breakdown[j].radius; })
+      .attr('cx', ((j+1)*(viewWidth / 12)) + viewWidth/12)
+      .attr('cy', 0)
+      .attr("fill", function(d) { return fillScoreColumn(j+1); })
+      .attr("stroke-width", 2)
+      .attr("stroke", function(d) { return d3.rgb(fillScoreColumn(j+1)).darker(); });
+
+    scoreGroups.append('text')
+      .attr('dx', ((j+1)*(viewWidth / 12)) + viewWidth/12)
+      .attr("dy", "5")
+      .attr('text-anchor', 'middle')
+      .text(function(d) { return d.breakdown[j].value > 0 ? d.breakdown[j].value : ''; });
+  }
+
+  scoreGroups.append('text')
     .attr("dx", "0")
     .attr("dy", "5")
     .attr('text-anchor', 'middle')
-    .text(scoreLabel);
+    .text(function(d) { return d.value > 0 ? d.value : ''; });
 
-  scoreContainers.exit().remove();  
+  scoreContainers.exit().remove();
+
   scoreGroups.attr('transform', function(d, i) {
     return "translate(" + d.x + "," + d.y + ")";
   });
+  
+  var scoreGroupLabelContainer = svg.selectAll('.score-group-labels').data(d3.entries(scoreDefinitions));
+  
+  scoreGroupLabels = scoreGroupLabelContainer.enter().append('text')
+    .attr('x', function(d, i) { return (viewWidth * 0.25) + ((i)*(viewWidth / 12)) + (i>0 ? (viewWidth/12) : 0); })
+    .attr('y', 100)
+    .attr('text-anchor', 'middle')
+    .attr('font-size', '30')
+    .attr('opacity', 0)
+    .attr('fill', function(d, i) { return i==0?'black':fillScoreColumn(i); })
+    .text(function(d) { return d.value; });
+    
+  scoreGroupLabelContainer.exit().remove();
+
+  var scoreReferenceLabelContainer = svg.selectAll('.score-reference-labels').data(d3.entries(scoreReferenceDefinitions));
+  
+  scoreReferenceLabels = scoreReferenceLabelContainer.enter().append('text')
+    .attr('x', 200)
+    .attr('y', function(d, i) { return 100 * (i+1) + 110; })
+    .attr('text-anchor', 'middle')
+    .attr('font-size', '20')
+    .attr('opacity', 0)
+    .text(function(d) { return "Referência " + d.value; });
+    
+  scoreReferenceLabelContainer.exit().remove();
   
   /* ====== CRITERIA NODES ====== */
   
@@ -555,6 +621,15 @@ $('#all').click(function() {
     .attr('opacity', 0);
 
   scoreGroups.transition().duration(1000)
+    .attr('transform', function(d, i) {
+      d.x = Math.random() * viewWidth;
+      d.y = Math.random() * viewHeight;
+      return "translate(" + d.x + "," + d.y + ")";
+    })
+    .attr('opacity', 0);
+  scoreGroupLabels.transition().duration(1000)
+    .attr('opacity', 0);
+  scoreReferenceLabels.transition().duration(1000)
     .attr('opacity', 0);
 
   criteriaGroups.transition().duration(1000)
@@ -592,6 +667,15 @@ $('#group').click(function() {
     .attr('opacity', 1);
 
   scoreGroups.transition().duration(1000)
+    .attr('transform', function(d, i) {
+      d.x = Math.random() * viewWidth;
+      d.y = Math.random() * viewHeight;
+      return "translate(" + d.x + "," + d.y + ")";
+    })
+    .attr('opacity', 0);
+  scoreGroupLabels.transition().duration(1000)
+    .attr('opacity', 0);
+  scoreReferenceLabels.transition().duration(1000)
     .attr('opacity', 0);
 
   criteriaGroups.transition().duration(1000)
@@ -648,6 +732,12 @@ $('#score').click(function() {
   scoreGroups.transition().duration(1000)
     .attr('opacity', 0.9)
     .attr('transform', tableizeScoreGroups);
+
+  scoreGroupLabels.transition().duration(1000)
+    .attr('opacity', 1);
+  scoreReferenceLabels.transition().duration(1000)
+    .attr('opacity', 1);
+
 });
 
 /* ====== SCORE BUTTON ====== */
@@ -666,6 +756,15 @@ $('#criteria').click(function() {
     .attr('opacity', 0);
 
   scoreGroups.transition().duration(1000)
+    .attr('transform', function(d, i) {
+      d.x = Math.random() * viewWidth;
+      d.y = Math.random() * viewHeight;
+      return "translate(" + d.x + "," + d.y + ")";
+    })
+    .attr('opacity', 0);
+  scoreGroupLabels.transition().duration(1000)
+    .attr('opacity', 0);
+  scoreReferenceLabels.transition().duration(1000)
     .attr('opacity', 0);
 
   criteriaForce.on("tick", function(e) {
