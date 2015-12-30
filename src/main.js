@@ -151,6 +151,7 @@ var scoreNodes = [];
 var scoreGroups = [];
 var scoreGroupLabels;
 var scoreReferenceLabels;
+var scoreReferenceLines;
 
 var criteriaKeys = ['1_2_3','1_3_1','1_3','1_5_1','1_5_2','1_6_1','1_6_2','2_1','2_2','2_3','2_4','3_1_1','3_1_2','3_1_3','3_1_4','3_1_5_1','3_1_5_2','3_1_5_3','3_1_5_4','3_2_1','3_2_2','3_2_3','3_2_4','4_1','4_2','4_3_1','4_3_2','4_3_3','4_3_4','4_3_5','5_1','5_2_1','5_2_2','5_2_3','5_2_4','5_3_1','5_3_2','5_3_3','5_4_1','5_4_2'];
 var criteriaKeysLength = criteriaKeys.length;
@@ -512,6 +513,19 @@ d3.csv('data/research.csv', function(data) {
   // debugger;
   
   // scoreNodes.sort(function(a, b) { return d3.ascending(a.value, b.value); })[100].value;
+
+  var scoreReferenceLineContainer = svg.selectAll('.score-reference-lines').data(d3.entries(scoreReferenceDefinitions));
+  
+  scoreReferenceLines = scoreReferenceLineContainer.enter().append('line')
+    .attr('x1', 400)
+    .attr('y1', function(d, i) { return 100 * (i+1) + 103; })
+    .attr('x2', viewWidth - 400)
+    .attr('y2', function(d, i) { return 100 * (i+1) + 103; })
+    .attr('stroke', '#ccc')
+    .attr('stroke-width', 1)
+    .attr('opacity', 0);
+    
+  scoreReferenceLineContainer.exit().remove();
   
   scoreNodes.sort(function(a, b) { return d3.descending(a.value, b.value); });  
   var scoreContainers = svg.selectAll('.scores').data(scoreNodes);
@@ -576,7 +590,7 @@ d3.csv('data/research.csv', function(data) {
     .attr('font-size', '20')
     .attr('opacity', 0)
     .text(function(d) { return "Referência " + d.value; });
-    
+
   scoreReferenceLabelContainer.exit().remove();
   
   /* ====== CRITERIA NODES ====== */
@@ -631,6 +645,8 @@ $('#all').click(function() {
     .attr('opacity', 0);
   scoreReferenceLabels.transition().duration(1000)
     .attr('opacity', 0);
+  scoreReferenceLines.transition().duration(1000)
+    .attr('opacity', 0);
 
   criteriaGroups.transition().duration(1000)
     .attr('opacity', 0);
@@ -677,6 +693,9 @@ $('#group').click(function() {
     .attr('opacity', 0);
   scoreReferenceLabels.transition().duration(1000)
     .attr('opacity', 0);
+  scoreReferenceLines.transition().duration(1000)
+    .attr('opacity', 0);
+
 
   criteriaGroups.transition().duration(1000)
     .attr('opacity', 0);
@@ -737,6 +756,8 @@ $('#score').click(function() {
     .attr('opacity', 1);
   scoreReferenceLabels.transition().duration(1000)
     .attr('opacity', 1);
+  scoreReferenceLines.transition().duration(1000)
+    .attr('opacity', 1);
 
 });
 
@@ -766,6 +787,9 @@ $('#criteria').click(function() {
     .attr('opacity', 0);
   scoreReferenceLabels.transition().duration(1000)
     .attr('opacity', 0);
+  scoreReferenceLines.transition().duration(1000)
+    .attr('opacity', 0);
+
 
   criteriaForce.on("tick", function(e) {
     criteriaGroups
