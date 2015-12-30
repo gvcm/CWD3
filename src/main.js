@@ -1,4 +1,4 @@
-var definition = {
+var columnDefinition = {
   "software":    "Software",
   "reference":   "Referência",
   "group":       "Grupo",
@@ -59,10 +59,12 @@ var definition = {
 };
 
 var $view = $('#view');
-var viewWidth = $view.width();
+var viewWidth = $(window).width();
 var viewCenterH = viewWidth / 2.0;
-var viewHeight = $(window).height() - $view.position().top;
+var viewHeight = $(window).height();
 var viewCenterV = viewHeight / 2.0;
+
+// var tooltip = CustomTooltip("cwd3-tooltip", 240);
 
 var svg = d3.select('#view').append('svg')
   .attr('width', viewWidth)
@@ -79,22 +81,12 @@ var fillColor = d3.scale.ordinal()
 var sliceH = viewWidth / 15;
 var groupAlignH = d3.scale.ordinal()
   .domain(['CW', 'T', 'L', 'F2', 'F1', 'Z', 'C', 'D'])
-  .range([
-    sliceH * 5,
-    sliceH * 6,
-    sliceH * 7,
-    sliceH * 8,
-    sliceH * 9,
-    sliceH * 10,
-    sliceH * 11,
-    sliceH * 12
-  ]);
+  .rangePoints([sliceH * 5, sliceH * 12]);
 
 var nodes = [];
 var force;
 var groups;
 var specGroup;
-
 
 var fillScoreColumn = d3.scale.ordinal()
   .domain([0, 1, 2, 3, 4, 5])
@@ -115,6 +107,19 @@ var criteriaForce;
 var criteriaGroups = [];
 
 /* ===== FUNCTIONS ===== */
+
+// var showTooltip = function(d, i, element) {
+//   d3.select(element).attr('stroke-before', d3.select(element).attr('stroke'));
+//   var content = '<span class="name">Software:</span><span class="value"> #{d.name}</span><br/>';
+//   tooltip.showTooltip(content, d3.event);
+//   console.log('show');
+// };
+// 
+// var hideTooltip = function(d, i, element) {
+//   d3.select(element).attr("stroke", d3.select(element).attr('stroke-before'));
+//   tooltip.hideTooltip();
+//   console.log('hide');
+// };
 
 var createRecord = function(row) {
   var scoreN = parseInt(row.scoreN);
@@ -225,8 +230,8 @@ var tableizeScoreGroups = function(d, i) {
   var posH;
   var posV;
 
-  posH = 150 * column + (viewWidth / 3);
-  posV = 50 * refNum + (viewHeight / 3);
+  posH = 150 * column + (viewWidth / 4) + (column==0 ? 0 : 150);
+  posV = 100 * refNum + (viewHeight / 3);
   
   if(posV > viewHeight) {
     svg.attr('height', posV + (viewHeight / 3));
@@ -341,8 +346,9 @@ d3.csv('data/research.csv', function(data) {
     .attr("fill", '#ccc')
     .attr("stroke-width", 2)
     .attr("stroke", '#aaa');
+
   specCircle.transition().duration(3000).attr('r', function(d) { return d.radius; });      
-  
+
   specGroup.append('text')
     .attr("dx", "0")
     .attr("dy", "5")
@@ -362,19 +368,40 @@ d3.csv('data/research.csv', function(data) {
     .attr('opacity', 0);
   
   var circles = groups.append('circle')
+  // .attr('r', function(d) { return d.radius; })
     .attr('r', 0)
     .attr("fill", function(d) { return fillColor(d.group); })
     .attr("stroke-width", 2)
+    // .style('pointer-events', 'none')
+    // .attr('pointer-events', 'none')
     .attr("stroke", function(d) { return d3.rgb(fillColor(d.group)).darker() });
+
+  // circles.on('mouseover', function(d){ d3.select(this).style("fill", "red"); });
+  // circles.on('mouseenter', function(d){ d3.select(this).style("fill", "red"); });
 
   var labels = groups.append('text')
     .attr("dx", "0")
     .attr("dy", "5")
     .attr('text-anchor', 'middle')
+    // .style('pointer-events', 'none')
+    // .attr('pointer-events', 'none')
     .text(function(d) { return d.reference; });
 
-  circles.transition().duration(3000).attr('r', function(d) { return d.radius; });    
+  // groups.append('rect')
+  //   .attr('width', function(d) { return d.radius * 2; })
+  //   .attr('height', function(d) { return d.radius * 2; })
+  //   .attr("x", function(d) { return -d.radius; })
+  //   .attr("y", function(d) { return -d.radius; })
+  //   .attr('fill', 'red')
+  //   .attr('opacity', 0.75)
+  //   .style('pointer-events', 'all')
+  //   .attr('pointer-events', 'all')
+  //   .on('mouseover', function(d){ d3.select(this).style("fill", "blue"); })
+  //   .on('mouseenter', function(d){ d3.select(this).style("fill", "blue"); });
+
   containers.exit().remove();
+
+  circles.transition().duration(3000).attr('r', function(d) { return d.radius; });
   
   force = d3.layout.force();
   force.nodes(nodes);
