@@ -58,6 +58,17 @@ var columnDefinition = {
   "link":        "Link"
 };
 
+var groupDefinitions = {
+  'CW': 'CrystalWalk',
+  'T':  'T - Tested',
+  'L':  'L - Licence not provided',
+  'F2': 'F2 - Out of scope',
+  'F1': 'F1 - Out of scope',
+  'Z':  'Others',
+  'C':  'C - Discontinued',
+  'D':  'D - Duplicated'
+};
+
 var $view = $('#view');
 var viewWidth = $(window).width();
 var viewCenterH = viewWidth / 2.0;
@@ -82,11 +93,16 @@ var sliceH = viewWidth / 15;
 var groupAlignH = d3.scale.ordinal()
   .domain(['CW', 'T', 'L', 'F2', 'F1', 'Z', 'C', 'D'])
   .rangePoints([sliceH * 5, sliceH * 12]);
+var groupAlignHFix = d3.scale.ordinal()
+  .domain(['CW', 'T', 'L', 'F2', 'F1', 'Z', 'C', 'D'])
+  .range([0.83, 0.95, 1.005, 0.99, 1.013, 1.05, 1.07, 1.06]);
 
 var nodes = [];
 var force;
 var groups;
 var specGroup;
+var dataGroupSpecLabel;
+var dataGroupLabels;
 
 var fillScoreColumn = d3.scale.ordinal()
   .domain([0, 1, 2, 3, 4, 5])
@@ -155,7 +171,7 @@ var clusterAll = function(alpha) {
 var clusterGroup = function(alpha) {
   return function(d) {
     var targetH = groupAlignH(d.group);
-    d.x = d.x + (targetH - d.x) * alpha;
+    d.x = d.x + (targetH - d.x) * (alpha / 0.5);
     d.y = d.y + (viewCenterV - d.y) * (alpha / 2);
   };
 };
@@ -177,7 +193,7 @@ var createScoreRecord = function(scoreXN, reference, column) {
     column: column,
     x: Math.random() * viewWidth,
     y: Math.random() * viewHeight
-  }
+  };
 };
 
 var createScoreRecords = function(row) {
@@ -359,6 +375,15 @@ d3.csv('data/research.csv', function(data) {
     .attr('opacity', 0.9)
     .attr('transform', "translate(" + (viewWidth / 3 * 2) + "," + (viewHeight / 2 + 5) + ")");
 
+  dataGroupSpecLabel = svg.append('text')
+    .attr("x", 200)
+    .attr("y", 100)
+    .attr('text-anchor', 'middle')
+    .attr('font-size', 30)
+    .attr('fill', '#aaa')
+    .attr('opacity', 0)
+    .text('SPEC');
+
   /* ====== NODES ====== */
 
   data.forEach(createNode);
@@ -378,6 +403,7 @@ d3.csv('data/research.csv', function(data) {
 
   // circles.on('mouseover', function(d){ d3.select(this).style("fill", "red"); });
   // circles.on('mouseenter', function(d){ d3.select(this).style("fill", "red"); });
+  // circles.on('click', function(d){ d3.select(this).style("fill", "red"); });
 
   var labels = groups.append('text')
     .attr("dx", "0")
@@ -398,6 +424,8 @@ d3.csv('data/research.csv', function(data) {
   //   .attr('pointer-events', 'all')
   //   .on('mouseover', function(d){ d3.select(this).style("fill", "blue"); })
   //   .on('mouseenter', function(d){ d3.select(this).style("fill", "blue"); });
+
+  // solution: maybe https://github.com/mbostock/d3/wiki/Selections#d3_mouse
 
   containers.exit().remove();
 
@@ -423,6 +451,42 @@ d3.csv('data/research.csv', function(data) {
     }
   });
   force.start();
+  
+  /* ====== GROUPS ====== */
+
+  var dataGroupContainers = svg.selectAll('.data-groups').data(d3.entries(groupDefinitions));
+  
+  dataGroupLabels = dataGroupContainers.enter().append('text')
+    .attr('x', function(d) { return groupAlignH(d.key) * groupAlignHFix(d.key); })
+    .attr('y', 100)
+    .attr('text-anchor', 'middle')
+    .attr('font-size', '30')
+    .attr('opacity', 0)
+    .attr('fill', function(d) { return fillColor(d.key); })
+    .text(function(d) { return d.key; });
+    
+
+  dataGroupContainers.exit().remove();
+  
+  // groups = containers.enter().append('g')
+  //   .attr('opacity', 0);
+  // 
+  // var circles = groups.append('circle')
+  // // .attr('r', function(d) { return d.radius; })
+  //   .attr('r', 0)
+  //   .attr("fill", function(d) { return fillColor(d.group); })
+  //   .attr("stroke-width", 2)
+  //   // .style('pointer-events', 'none')
+  //   // .attr('pointer-events', 'none')
+  //   .attr("stroke", function(d) { return d3.rgb(fillColor(d.group)).darker() });
+  // 
+  // 
+  // specGroup.append('text')
+  //   .attr("dx", "0")
+  //   .attr("dy", "5")
+  //   .attr('text-anchor', 'middle')
+  //   .text('100');
+
 
   /* ====== SCORE NODES ====== */
 
@@ -484,7 +548,12 @@ d3.csv('data/research.csv', function(data) {
 /* ====== ALL BUTTON ====== */
 
 $('#all').click(function() {
-  
+
+  dataGroupSpecLabel.transition().duration(1000)
+    .attr('opacity', 0);
+  dataGroupLabels.transition().duration(1000)
+    .attr('opacity', 0);
+
   scoreGroups.transition().duration(1000)
     .attr('opacity', 0);
 
@@ -517,6 +586,11 @@ $('#all').click(function() {
 
 $('#group').click(function() {
 
+  dataGroupSpecLabel.transition().duration(1000)
+    .attr('opacity', 1);
+  dataGroupLabels.transition().duration(1000)
+    .attr('opacity', 1);
+
   scoreGroups.transition().duration(1000)
     .attr('opacity', 0);
 
@@ -547,6 +621,11 @@ $('#group').click(function() {
 
 $('#score').click(function() {
   
+  dataGroupSpecLabel.transition().duration(1000)
+    .attr('opacity', 0);
+  dataGroupLabels.transition().duration(1000)
+    .attr('opacity', 0);
+  
   groups.transition().duration(1000)
     .attr('opacity', 0);
 
@@ -575,6 +654,11 @@ $('#score').click(function() {
 
 $('#criteria').click(function() {
   
+  dataGroupSpecLabel.transition().duration(1000)
+    .attr('opacity', 0);
+  dataGroupLabels.transition().duration(1000)
+    .attr('opacity', 0);
+
   groups.transition().duration(1000)
     .attr('opacity', 0);
 
