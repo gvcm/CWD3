@@ -8,22 +8,26 @@
     <link href="css/build.min.css" rel="stylesheet">
   </head>
   <body>
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-xs-offset-2 col-xs-8">
-          <div class="panel panel-default">
-            <div class="panel-body">
-              <div class="btn-group" role="group" aria-label="...">
-                <button type="button" class="btn btn-default" data-view="all">Todos</button>
-                <button type="button" class="btn btn-default" data-view="group">Grupos</button>
-                <button type="button" class="btn btn-default" data-view="score">Pontuação</button>
-                <button type="button" class="btn btn-default" data-view="criteria">Critério</button>
-                <button type="button" class="btn btn-default" data-view="popularity">Popularidade</button>
+    <div class="navbar navbar-fixed-top">
+      <div class="container">
+        <div class="row">
+          <div class="col-xs-offset-2 col-xs-8">
+            <div class="panel panel-default">
+              <div class="panel-body">
+                <div class="btn-group" role="group" aria-label="">
+                  <button type="button" class="btn btn-default" data-view="all">Todos</button>
+                  <button type="button" class="btn btn-default" data-view="group">Grupos</button>
+                  <button type="button" class="btn btn-default" data-view="score">Pontuação</button>
+                  <button type="button" class="btn btn-default" data-view="criteria">Critério</button>
+                  <button type="button" class="btn btn-default" data-view="popularity">Popularidade</button>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+    </div>
+    <div class="container-fluid">
       <div class="row">
         <div class="col-xs-12" id="view"></div>
       </div>

@@ -1,10 +1,13 @@
 class Text
-  build: (element) ->
-    @element = element.append('text')
+  build: (parent) ->
+    @element = parent.append('text')
       .attr('dx', 0)
       .attr('dy', 5)
       .attr('text-anchor', 'middle')
       .text(@text)
 
   text: (data) ->
-    data.weight
+    if data.weight > 0
+      data.weight
+    else
+      null
