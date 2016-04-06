@@ -1,34 +1,64 @@
 class Group
   constructor: (selected, data) ->
+    @data = data
     @nodes = selected.data(data)
     @element = @nodes.enter().append('g')
       .attr('data-toggle', 'popover')
       .attr('title', @title)
       .attr('data-content', @dataContent)
-      .attr('transform', @transform)
       .attr('href', @link)
+      .attr('data-index', @index)
+      .attr('data-placement', @placement)
 
-  title: (data) ->
-    data.title
+  index: (data, index) ->
+    index
+
+  placement: (data, index) ->
+    if index > 0 then 'right' else 'left'
+    
+  title: (data, index) ->
+    data.title if index > 0
 
   link: (data) ->
-    data.link
+    if data.link? then data.link else '#'
 
-  dataContent: (data) ->
-    '<table>' +
-    '<tr><td style="text-align:right"><strong>Total:</strong></td><td>&nbsp;&nbsp;&nbsp;' + data.total + '</td></tr>' +
-    '<tr><td style="text-align:right"><strong>Scores 1–5:</strong></td><td>&nbsp;&nbsp;&nbsp;' + data.score.join(', ') + '</td></tr>' +
-    '<tr><td style="text-align:right"><strong>Group:</strong></td><td>&nbsp;&nbsp;&nbsp;' + data.group + '</td></tr>' +
-    '<tr><td colspan="2">' + data.description + '</td></tr>' +
-    '</table>'
+  dataContent: (data, index) ->
+    if index > 0
+      "
+      <table>
+        <tr><td style=\"text-align:right\"><strong>Total:</strong></td><td>&nbsp;&nbsp;&nbsp;#{data.total}</td></tr>
+        <tr><td style=\"text-align:right\"><strong>Scores 1–5:</strong></td><td>&nbsp;&nbsp;&nbsp;#{data.score.join(', ')}</td></tr>
+        <tr><td style=\"text-align:right\"><strong>Group:</strong></td><td>&nbsp;&nbsp;&nbsp;#{data.group}</td></tr>
+        <tr><td colspan=\"2\">#{data.description}</td></tr>
+      </table>"
+    else
+      data.title
 
-  transform: (data) ->
-    x = Math.random() * 1000
-    y = Math.random() * 1000
-    'translate(' + x + ',' + y + ')'
+  transform: (func) ->
+    func ?= (data) ->
+      if data.x and data.y
+        "translate(#{data.x},#{data.y})"
+    @element.attr 'transform', func
 
   append: (child) ->
     child.build(@element)
 
   render: ->
     @nodes.exit().remove()
+
+  cluster: (width, height) ->
+    tick = (e) =>
+      return if e.alpha < 0.05
+      @transform((data, index) ->
+        if index > 0
+          "translate(#{data.x},#{data.y})"
+        else
+          "translate(#{(width/12.0)*10},#{height/2.0})"
+      )
+
+    d3.layout.force()
+      .nodes(@data)
+      .size([(width/12)*10, height])
+      .gravity(0.15)
+      .on('tick', tick)
+      .start()

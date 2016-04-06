@@ -3,7 +3,7 @@ class View
     @container = $(selector)
     @container.height($(window).height() - @container.position().top)
     @width = @container.width()
-    @height = @container.height()
+    @height = @container.height() * 2
     @element = d3.select(selector)
       .append('svg')
       .attr('width', @width)
@@ -16,5 +16,5 @@ class View
     group.append(circle)
     group.append(text)
     group.render()
-
-    circle.show();
+    circle.show()
+    group.cluster(@width, @height)
