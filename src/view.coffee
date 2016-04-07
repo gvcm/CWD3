@@ -17,4 +17,5 @@ class View
     group.append(text)
     group.render()
     circle.show()
+    text.show()
     group.cluster(@width, @height)
