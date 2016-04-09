@@ -3,12 +3,16 @@ class Group
     @data = data
     @nodes = selected.data(data)
     @element = @nodes.enter().append('g')
+      .attr('transform', @transform)
       .attr('data-toggle', 'popover')
       .attr('title', @title)
       .attr('data-content', @dataContent)
       .attr('href', @link)
       .attr('data-index', @index)
       .attr('data-placement', @placement)
+
+  transform: (data, index) ->
+    "translate(#{data.x},#{data.y})"
 
   index: (data, index) ->
     index
@@ -34,31 +38,25 @@ class Group
     else
       data.title
 
-  transform: (func) ->
-    func ?= (data) ->
-      if data.x and data.y
-        "translate(#{data.x},#{data.y})"
-    @element.attr 'transform', func
-
   append: (child) ->
     child.build(@element)
 
   render: ->
     @nodes.exit().remove()
 
-  cluster: (width, height) ->
-    tick = (e) =>
-      return if e.alpha < 0.05
-      @transform((data, index) ->
-        if index > 0
-          "translate(#{data.x},#{data.y})"
-        else
-          "translate(#{(width/12.0)*10},#{height/2.0})"
-      )
-
-    d3.layout.force()
-      .nodes(@data)
-      .size([(width/12)*10, height])
-      .gravity(0.15)
-      .on('tick', tick)
-      .start()
+  # cluster: (width, height) ->
+  #   tick = (e) =>
+  #     return if e.alpha < 0.05
+  #     @transform((data, index) ->
+  #       if index > 0
+  #         "translate(#{data.x},#{data.y})"
+  #       else
+  #         "translate(#{(width/12.0)*10},#{height/2.0})"
+  #     )
+  # 
+  #   d3.layout.force()
+  #     .nodes(@data)
+  #     .size([(width/12)*10, height])
+  #     .gravity(0.15)
+  #     .on('tick', tick)
+  #     .start()

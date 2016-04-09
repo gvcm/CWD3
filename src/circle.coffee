@@ -1,18 +1,21 @@
 class Circle
   build: (parent) ->
     @element = parent.append('circle')
-      .attr('r', 0)
+      .attr('r', @radius)
       .attr('fill', @fill)
       .attr('stroke-width', 0)
 
+  # radius: (data) =>
+  #   Circle.radiusScale(data.weight)
+
   radius: (data) =>
-    Circle.radiusScale(data.weight)
+    Circle.radiusScale(data.r)
 
   fill: (data) ->
     Circle.backgroundPallete(data.group)
 
-  show: ->
-    @element.transition().duration(3000).attr('r', @radius);
+  # show: ->
+  #   @element.transition().duration(3000).attr('r', @radius);
 
   @backgroundPallete = d3.scale.ordinal()
     .domain(['CW', 'T', 'L', 'F2', 'F1', 'Z', 'C', 'D'])

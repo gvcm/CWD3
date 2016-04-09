@@ -1,6 +1,11 @@
 view = new View('#view')
 table = new Table('data.csv', ->
-  view.render(table.rows)
+  nodes = new Hierarchy(table)
+    .group('group')
+    .name('title')
+    .value('weight')
+    .nodes()
+  view.render(nodes)
 
   $('[data-toggle="popover"]').popover(
     container: 'body'
