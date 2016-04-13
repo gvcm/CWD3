@@ -3,14 +3,16 @@ var coffee = require('gulp-coffee');
 var util = require('gulp-util');
 var sourcemaps = require('gulp-sourcemaps');
 var concat = require('gulp-concat');
-var connect = require('gulp-connect');
+var express = require('express');
 var livereload = require('gulp-livereload');
 var merge2 = require('merge2');
+var sass = require('gulp-sass')
+var minifycss = require('gulp-minify-css')
 
-gulp.task('connect', function() {
-  connect.server({
-    root: 'public'
-  });
+gulp.task('express', function() {
+  var app = express();
+  app.use(express.static(__dirname + '/public'))
+  app.listen(8088, '127.0.0.1');
 });
 
 gulp.task('html', function () {
@@ -42,18 +44,18 @@ gulp.task('scripts', function() {
    .pipe(livereload());
 });
 
-gulp.task('watch', function () {
-  livereload.listen()
-  gulp.watch(['public/index.html'], ['html']);
-  gulp.watch(['src/**/*.coffee'], ['scripts', 'html']);
-});
-
 gulp.task('styles', function() {
-  return gulp.src([
-    'node_modules/bootstrap/dist/css/bootstrap.min.css'
-  ]).pipe(concat('build.min.css'))
-    .pipe(gulp.dest('public/css'))
-    .pipe(livereload());
+  return merge2(
+    gulp.src([
+      'node_modules/bootstrap/dist/css/bootstrap.min.css'
+    ]),
+    gulp.src([
+      'src/**/*.scss'
+    ]).pipe(sass().on('error', util.log))
+  ).pipe(concat('build.min.css'))
+   .pipe(minifycss())
+   .pipe(gulp.dest('public/css'))
+   .pipe(livereload());
 });
 
 gulp.task('fonts', function() {
@@ -63,8 +65,15 @@ gulp.task('fonts', function() {
     .pipe(livereload());
 });
 
+gulp.task('watch', function () {
+  livereload.listen()
+  gulp.watch(['public/index.html'], ['html']);
+  gulp.watch(['src/**/*.coffee'], ['scripts']);
+  gulp.watch(['src/**/*.scss'], ['styles'])
+});
+
 gulp.task('default', [
-  'connect',
+  'express',
   'watch',
   'html',
   'scripts',
