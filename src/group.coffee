@@ -6,12 +6,24 @@ class Group
       .attr('data-toggle', 'popover')
       .attr('title', @title)
       .attr('data-content', @dataContent)
-      .attr('href', @link)
-      .attr('data-index', @index)
       .attr('data-placement', @placement)
+      .on('mouseover', @mouseover)
+      .on('mouseout', @mouseout)
+      .on('click', @click)
 
-  index: (data, index) ->
-    index
+  mouseover: (x) ->
+    circle = d3.select(this).selectAll('circle')
+    circle
+      .attr('data-prev-stroke', circle.attr('stroke'))
+      .attr('data-prev-stroke-width', circle.attr('stroke-width'))
+      .attr('stroke', 'black')
+      .attr('stroke-width', 3)
+
+  mouseout: (x) ->
+    circle = d3.select(this).selectAll('circle')
+    circle
+      .attr('stroke', circle.attr('data-prev-stroke'))
+      .attr('stroke-width', circle.attr('data-prev-stroke-width'))
 
   placement: (data, index) ->
     if index > 0 then 'right' else 'left'
@@ -19,8 +31,9 @@ class Group
   title: (data, index) ->
     data.title if index > 0
 
-  link: (data) ->
-    if data.link? then data.link else '#'
+  click: (data) ->
+    if data.link?
+      window.open(data.link, '_blank')
 
   dataContent: (data, index) ->
     if index > 0
