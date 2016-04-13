@@ -3,7 +3,6 @@ table = new Table('data.csv', ->
   nodes = new Hierarchy(table)
     .group('group')
     .name('title')
-    .value('weight')
     .nodes()
   view.render(nodes)
 
@@ -15,12 +14,14 @@ table = new Table('data.csv', ->
   
   $('g').hover((->
     $circle = $(this).find('circle')
-    $circle.attr('stroke', 'black')
-    $circle.attr('stroke-width', 3)
+    $circle.data('previous-stroke', $circle.attr('stroke'))
+           .data('previous-stroke-width', $circle.attr('stroke-width'))
+           .attr('stroke', 'black')
+           .attr('stroke-width', 3)
   ),(->
     $circle = $(this).find('circle')
-    $circle.attr('stroke', 'transparent')
-    $circle.attr('stroke-width', 0)
+    $circle.attr('stroke', $circle.data('previous-stroke'))
+           .attr('stroke-width', $circle.data('previous-stroke-width'))
   ))
   
   $('g').on 'click', ->

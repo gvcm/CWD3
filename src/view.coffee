@@ -12,24 +12,13 @@ class View
   render: (data) ->
 
     pack = d3.layout.pack()
-      .size([@width, @height])
+      .size([@width * 0.8, @height * 0.8])
     
-    # node = @element.selectAll('.node')
-    #   .data(pack.nodes(data))
-    #   .enter().append('g')
-    #   .attr('transform', (d) -> "translate(#{d.x},#{d.y})")
-    #   
-    # node.append('circle')
-    #   .attr('r', (d) -> d.r)
-    #   .attr('stroke', 'red')
-    #   .attr('stroke-width', 2)
-
     group = new Group(@element.selectAll('.node'), pack.nodes(data))
     circle = new Circle()
     text = new Text()
     group.append(circle)
-    # group.append(text)
+    group.append(text)
     group.render()
-    # circle.show()
-    # text.show()
-    # group.cluster(@width, @height)
+    circle.show()
+    text.show()

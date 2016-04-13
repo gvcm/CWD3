@@ -8,26 +8,19 @@ class Group
       .attr('title', @title)
       .attr('data-content', @dataContent)
       .attr('href', @link)
-      .attr('data-index', @index)
-      .attr('data-placement', @placement)
+      .attr('data-placement', 'bottom')
 
   transform: (data, index) ->
     "translate(#{data.x},#{data.y})"
 
-  index: (data, index) ->
-    index
-
-  placement: (data, index) ->
-    if index > 0 then 'right' else 'left'
-    
-  title: (data, index) ->
-    data.title if index > 0
+  title: (data) ->
+    data.title if data.title?
 
   link: (data) ->
     if data.link? then data.link else '#'
 
   dataContent: (data, index) ->
-    if index > 0
+    if data.total? and data.score? and data.group? and data.description?
       "
       <table>
         <tr><td style=\"text-align:right\"><strong>Total:</strong></td><td>&nbsp;&nbsp;&nbsp;#{data.total}</td></tr>
@@ -35,7 +28,7 @@ class Group
         <tr><td style=\"text-align:right\"><strong>Group:</strong></td><td>&nbsp;&nbsp;&nbsp;#{data.group}</td></tr>
         <tr><td colspan=\"2\">#{data.description}</td></tr>
       </table>"
-    else
+    else if data.title?
       data.title
 
   append: (child) ->
@@ -43,20 +36,3 @@ class Group
 
   render: ->
     @nodes.exit().remove()
-
-  # cluster: (width, height) ->
-  #   tick = (e) =>
-  #     return if e.alpha < 0.05
-  #     @transform((data, index) ->
-  #       if index > 0
-  #         "translate(#{data.x},#{data.y})"
-  #       else
-  #         "translate(#{(width/12.0)*10},#{height/2.0})"
-  #     )
-  # 
-  #   d3.layout.force()
-  #     .nodes(@data)
-  #     .size([(width/12)*10, height])
-  #     .gravity(0.15)
-  #     .on('tick', tick)
-  #     .start()
