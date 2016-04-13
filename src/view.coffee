@@ -12,7 +12,8 @@ class View
   render: (data) ->
 
     pack = d3.layout.pack()
-      .size([@width * 0.8, @height * 0.8])
+      .sort(null)
+      .size([@width, @height])
     
     group = new Group(@element.selectAll('.node'), pack.nodes(data))
     circle = new Circle()
