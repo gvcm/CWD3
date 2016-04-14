@@ -41,7 +41,7 @@ class Group
 
   click: (data) ->
     return if d3.event.defaultPrevented
-    if data.link?
+    if data.link? and data.link != ''
       window.open(data.link, '_blank')
 
   dataContent: (data, index) ->
