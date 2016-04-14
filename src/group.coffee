@@ -44,6 +44,7 @@ class Group
     data.title if index > 0
 
   click: (data) ->
+    return if d3.event.defaultPrevented
     if data.link?
       window.open(data.link, '_blank')
 
@@ -83,10 +84,14 @@ class Group
         "translate(#{data.x},#{data.y})"
       )
 
-    d3.layout.force()
+    @data[0].fixed = true
+    
+    force = d3.layout.force()
       .nodes(@data)
       .size([(width/12)*10, height])
       .gravity(0.2)
       .charge(@charge)
       .on('tick', tick)
       .start()
+
+    @nodes.call(force.drag)
