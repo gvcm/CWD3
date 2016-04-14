@@ -1,5 +1,4 @@
 class Group
-  @enableBringToFront = false
   
   constructor: (selected, data) ->
     @data = data
@@ -15,10 +14,8 @@ class Group
 
   mouseover: (x) ->
     group = d3.select(this)
-    if Group.enableBringToFront
-      # TODO: Fix overlap
-      groupElement = group[0][0]
-      groupElement.parentNode.appendChild(groupElement)
+    groupElement = group[0][0]
+    groupElement.parentNode.appendChild(groupElement)
     circle = group.selectAll('circle')
     circle
       .attr('data-prev-stroke', circle.attr('stroke'))
@@ -28,10 +25,9 @@ class Group
 
   mouseout: (x) ->
     group = d3.select(this)
-    if Group.enableBringToFront
-      groupElement = group[0][0]
-      parentNode = groupElement.parentNode
-      parentNode.insertBefore(groupElement, parentNode.firstChild)
+    groupElement = group[0][0]
+    parentNode = groupElement.parentNode
+    parentNode.insertBefore(groupElement, parentNode.firstChild)
     circle = group.selectAll('circle')
     circle
       .attr('stroke', circle.attr('data-prev-stroke'))
