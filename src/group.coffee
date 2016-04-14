@@ -71,19 +71,22 @@ class Group
   render: ->
     @nodes.exit().remove()
 
+  charge: (data, index) ->
+    return 0 if index == 0
+    return -(data.total + 1) * 25
+
   cluster: (width, height) ->
     tick = (e) =>
       return if e.alpha < 0.05
       @transform((data, index) ->
-        if index > 0
-          "translate(#{data.x},#{data.y})"
-        else
-          "translate(#{(width/12.0)*10},#{height/2.0})"
+        return "translate(#{(width/12.0)*10},#{height/2.0})" if index == 0
+        "translate(#{data.x},#{data.y})"
       )
 
     d3.layout.force()
       .nodes(@data)
       .size([(width/12)*10, height])
-      .gravity(0.15)
+      .gravity(0.2)
+      .charge(@charge)
       .on('tick', tick)
       .start()
