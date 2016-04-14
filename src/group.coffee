@@ -1,5 +1,5 @@
 class Group
-  @bringToFront = false
+  @enableBringToFront = false
   
   constructor: (selected, data) ->
     @data = data
