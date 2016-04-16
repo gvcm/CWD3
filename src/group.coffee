@@ -11,6 +11,8 @@ class Group
       .on('mouseover', @mouseover)
       .on('mouseout', @mouseout)
       .on('click', @click)
+    @callbacks = {}
+    @force = null
 
   mouseover: (x) ->
     group = d3.select(this)
@@ -73,21 +75,47 @@ class Group
     return -(data.total + 1) * 25
 
   cluster: (width, height) ->
+
     tick = (e) =>
-      return if e.alpha < 0.05
+      @force.stop() if e.alpha < 0.05
       @transform((data, index) ->
         return "translate(#{(width/12.0)*10},#{height/2.0})" if index == 0
         "translate(#{data.x},#{data.y})"
       )
 
+    end = (e) =>
+      @callbacks['forceEnd']() if @callbacks['forceEnd']?
+
     @data[0].fixed = true
     
-    force = d3.layout.force()
+    @force = d3.layout.force()
       .nodes(@data)
       .size([(width/12)*10, height])
       .gravity(0.2)
       .charge(@charge)
       .on('tick', tick)
+      .on('end', end)
       .start()
 
-    @nodes.call(force.drag)
+    @nodes.call(@force.drag)
+    @
+
+  boundary: ->
+    boundary =
+      x1: @data[0].x
+      y1: @data[0].y
+      x2: @data[0].x
+      y2: @data[0].y
+    for row in @data
+      boundary.x1 = row.x if row.x < boundary.x1
+      boundary.y1 = row.y if row.y < boundary.y1
+      boundary.x2 = row.x if row.x > boundary.x2
+      boundary.y2 = row.y if row.y > boundary.y2
+    boundary
+
+  total: ->
+    @data.length
+
+  on: (event, callback) ->
+    @callbacks[event] = callback
+    @
