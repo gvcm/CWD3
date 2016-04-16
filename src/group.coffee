@@ -1,4 +1,15 @@
 class Group
+  build: (parent) ->
+    @element = parent.append('g')
+      .attr('data-toggle', 'popover')
+      .attr('title', @title)
+      .attr('data-content', @dataContent)
+      .attr('data-placement', @placement)
+      .on('mouseover', @mouseover)
+      .on('mouseout', @mouseout)
+      .on('click', @click)
+    @callbacks = {}
+    @force = null
   
   constructor: (selected, data) ->
     @nodes = selected.data(data)
@@ -93,11 +104,11 @@ class Group
       .on('end', end)
       .start()
 
-    @nodes.call(@force.drag)
+    @element.call(@force.drag)
     @
 
   boundary: ->
-    data = @element.data()
+    data = @element.data().slice(1)
     x = data.map((row) -> row.x)
     y = data.map((row) -> row.y)
     { x1: d3.min(x), x2: d3.max(x), y1: d3.min(y), y2: d3.max(y) }
