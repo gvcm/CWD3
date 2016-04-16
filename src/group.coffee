@@ -1,7 +1,6 @@
 class Group
   
   constructor: (selected, data) ->
-    @data = data
     @nodes = selected.data(data)
     @element = @nodes.enter().append('g')
       .attr('data-toggle', 'popover')
@@ -83,10 +82,10 @@ class Group
     end = (e) =>
       @callbacks['forceEnd']() if @callbacks['forceEnd']?
 
-    @data[0].fixed = true
+    @element.data()[0].fixed = true
     
     @force = d3.layout.force()
-      .nodes(@data)
+      .nodes(@element.data())
       .size([(width/12)*10, height])
       .gravity(0.2)
       .charge(@charge)
@@ -98,20 +97,13 @@ class Group
     @
 
   boundary: ->
-    boundary =
-      x1: @data[0].x
-      y1: @data[0].y
-      x2: @data[0].x
-      y2: @data[0].y
-    for row in @data
-      boundary.x1 = row.x if row.x < boundary.x1
-      boundary.y1 = row.y if row.y < boundary.y1
-      boundary.x2 = row.x if row.x > boundary.x2
-      boundary.y2 = row.y if row.y > boundary.y2
-    boundary
+    data = @element.data()
+    x = data.map((row) -> row.x)
+    y = data.map((row) -> row.y)
+    { x1: d3.min(x), x2: d3.max(x), y1: d3.min(y), y2: d3.max(y) }
 
   total: ->
-    @data.length
+    @element.data().length
 
   on: (event, callback) ->
     @callbacks[event] = callback
