@@ -67,9 +67,6 @@ class Group
   append: (child) ->
     child.build(@element)
 
-  render: ->
-    @nodes.exit().remove()
-
   charge: (data, index) ->
     return 0 if index == 0
     return -(data.total + 1) * 25

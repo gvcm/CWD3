@@ -15,7 +15,6 @@ class View
     label = new Label()
     group.append(circle)
     group.append(label)
-    group.render()
     circle.show()
     total = new Text(@element)
     group.cluster(@width, @height)
