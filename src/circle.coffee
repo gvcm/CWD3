@@ -15,8 +15,8 @@ class Circle
     @element.transition().duration(3000).attr('r', @radius);
 
   @backgroundPallete = d3.scale.ordinal()
-    .domain(['CW', 'T', 'L', 'F2', 'F1', 'Z', 'C', 'D'])
-    .range(['#d3372c', '#2767b3', '#85898f', '#e89e78', '#3f9657', '#b3c841','#efb052', '#5d3b5a'])
+    .domain(['SPEC', 'CW', 'T', 'L', 'F2', 'F1', 'Z', 'C', 'D'])
+    .range(['#ff0000', '#000000', '#595959', '#85898f', '#e89e78', '#3f9657', '#b3c841','#efb052', '#5d3b5a'])
 
   @radiusScale = d3.scale.sqrt()
     .domain([0, 100])

@@ -5,6 +5,7 @@ class Text
       .attr('opacity', 0)
       .attr('text-anchor', 'middle')
       .attr('font-size', @fontSize)
+      .attr('fill', @color)
     @element.append('tspan')
       .text(@textLabel)
     @element.append('tspan')
@@ -30,6 +31,9 @@ class Text
 
   fontSize: (data, index) ->
     if data.weight? and data.weight > 0 then Text.fontSizeScale(data.weight) * 8 else 0
+
+  color: (data, index) ->
+    return '#FFFFFF' if index == 1 or data.group == 'T'
 
   @shortLabels = [
     'SPEC16'
