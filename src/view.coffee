@@ -22,6 +22,6 @@ class View
       .on('forceEnd', =>
         b = group.boundary()
         label.show()
-        total.translate(((b.x1 + b.x2) / 2.0), b.y2 + 50)
+        total.translate(((b.x1 + b.x2) / 2.0) - 15, b.y2 + 50)
         total.text("TOTAL=#{group.total()}")
       )
