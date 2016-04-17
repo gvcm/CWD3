@@ -1,15 +1,10 @@
 class Text
-  build: (parent) ->
+  constructor: (parent) ->
     @element = parent.append('text')
       .attr('font-weight', 'bold')
       .text('')
     @
 
-  # constructor: (parent) ->
-  #   @element = parent.append('text')
-  #     .attr('font-weight', 'bold')
-  #     .text('')
-      
   translate: (x, y) ->
     @element.attr 'transform', "translate(#{x},#{y})"
 

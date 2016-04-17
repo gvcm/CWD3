@@ -1,6 +1,6 @@
 class Group
-  build: (parent) ->
-    @element = parent.append('g')
+  constructor: (nodes) ->
+    @element = nodes.append('g')
       .attr('data-toggle', 'popover')
       .attr('title', @title)
       .attr('data-content', @dataContent)
