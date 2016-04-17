@@ -1,5 +1,5 @@
 class View
-  constructor: (selector) ->
+  setupCanvas: (selector) ->
     @container = $(selector)
     @container.height($(window).height() - @container.position().top)
     @width = @container.width()
@@ -8,33 +8,59 @@ class View
       .append('svg')
       .attr('width', @width)
       .attr('height', @height)
+  
+  setupNodes: (data) ->
+    @nodes = @element.selectAll('.node').data(data).enter()
+
+  append: (child) ->
+    child.build(@nodes)
+
+  setupElements: ->
+    @group = @append(new Group())
+    @circle = @group.append(new Circle())
+    @label = @group.append(new Label())
+
+  render: (tab) ->
+    @tabs()[tab]()
+
+  constructor: (selector, data) ->
+    @setupCanvas(selector)
+    @setupNodes(data)
+    @setupElements()
+    @render('all')
+
+  center: ->
+    window.scrollTo(0, @height / 4)
 
   scrollLock: (lock) ->
-    body = $('body')
-    if lock
-      body.css('overflow', 'hidden')
-    else
-      body.css('overflow-x', 'hidden')
-        .css('overflow-y', 'scroll')
+    $('body').css('overflow', (if lock then 'hidden' else 'scroll'))
 
-  render: (data) ->
-    group = new Group(@element.selectAll('.node'), data)
-    circle = new Circle()
-    label = new Label()
-    total = new Text(@element)
-    group.append(circle)
-    group.append(label)
+  tabs: ->
+    all: =>
+      total = @append(new Text())
 
-    window.scrollTo(0, @height / 4)
-    @scrollLock(true)
+      @center()
+      @scrollLock(true)
 
-    circle.show()
-    label.show()
+      @circle.show()
+      @label.show()
 
-    group.cluster(@width, @height)
-      .on('forceEnd', =>
-        b = group.boundary()
-        total.translate(((b.x1 + b.x2) / 2.0) - 15, b.y2 + 50)
-        total.text("TOTAL=#{group.total()}")
-        @scrollLock(false)
-      )
+      @group.cluster(@width, @height)
+        .on('forceEnd', =>
+          b = @group.boundary()
+          total.translate(((b.x1 + b.x2) / 2.0) - 15, b.y2 + 50)
+          total.text("TOTAL=#{@group.total()}")
+          @scrollLock(false)
+        )
+
+    group: =>
+      console.log('TODO group')
+
+    score: =>
+      console.log('TODO score')
+
+    criteria: =>
+      console.log('TODO criteria')
+
+    popularity: =>
+      console.log('TODO popularity')

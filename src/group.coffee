@@ -10,19 +10,7 @@ class Group
       .on('click', @click)
     @callbacks = {}
     @force = null
-  
-  constructor: (selected, data) ->
-    @nodes = selected.data(data)
-    @element = @nodes.enter().append('g')
-      .attr('data-toggle', 'popover')
-      .attr('title', @title)
-      .attr('data-content', @dataContent)
-      .attr('data-placement', @placement)
-      .on('mouseover', @mouseover)
-      .on('mouseout', @mouseout)
-      .on('click', @click)
-    @callbacks = {}
-    @force = null
+    @
 
   mouseover: (x) ->
     group = d3.select(this)

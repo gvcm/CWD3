@@ -12,6 +12,7 @@ class Label
       .attr('x', 0)
       .attr('dy', @lineHeight)
       .text(@weight)
+    @
 
   show: ->
     @element.transition().duration(1000).attr('opacity', 1)

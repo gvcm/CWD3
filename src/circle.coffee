@@ -4,6 +4,7 @@ class Circle
       .attr('r', 0)
       .attr('fill', @fill)
       .attr('stroke-width', 0)
+    @
 
   radius: (data) =>
     Circle.radiusScale(data.weight)
