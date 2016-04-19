@@ -7,7 +7,7 @@ class Circle
     @
 
   radius: (data) =>
-    Circle.radiusScale(data.weight)
+    Circle.radiusScale(data.scoreN)
 
   fill: (data) ->
     Circle.backgroundPallete(data.group)

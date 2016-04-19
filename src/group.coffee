@@ -57,9 +57,6 @@ class Group
       data.title
 
   transform: (func) ->
-    func ?= (data) ->
-      if data.x and data.y
-        "translate(#{data.x},#{data.y})"
     @element.attr 'transform', func
 
   append: (child) ->
@@ -72,7 +69,7 @@ class Group
   cluster: (width, height) ->
 
     tick = (e) =>
-      @force.stop() if e.alpha < 0.05
+      @force.stop() if e.alpha < 0.03
       @transform((data, index) ->
         return "translate(#{(width/12.0)*10},#{height/2.0})" if index == 0
         "translate(#{data.x},#{data.y})"

@@ -11,7 +11,7 @@ class Label
     @element.append('tspan')
       .attr('x', 0)
       .attr('dy', @lineHeight)
-      .text(@weight)
+      .text(@scoreN)
     @
 
   show: ->
@@ -21,17 +21,17 @@ class Label
     if index < Label.shortLabels.length
       "[#{Label.shortLabels[index]}]"
 
-  weight: (data, index) ->
-    if data.weight? and data.weight > 0 and index < Label.shortLabels.length
-      "#{data.weight}%"
+  scoreN: (data, index) ->
+    if data.scoreN? and data.scoreN > 0 and index < Label.shortLabels.length
+      "#{data.scoreN}%"
 
   lineHeight: (data, index) ->
-    if data.weight? and data.weight > 0 then Label.fontSizeScale(data.weight) * 12 else 0
+    if data.scoreN? and data.scoreN > 0 then Label.fontSizeScale(data.scoreN) * 12 else 0
 
   @fontSizeScale = d3.scale.log()
 
   fontSize: (data, index) ->
-    if data.weight? and data.weight > 0 then Label.fontSizeScale(data.weight) * 8 else 0
+    if data.scoreN? and data.scoreN > 0 then Label.fontSizeScale(data.scoreN) * 8 else 0
 
   color: (data, index) ->
     return '#FFFFFF' if index == 1 or data.group == 'T'

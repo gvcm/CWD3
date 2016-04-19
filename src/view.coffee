@@ -23,6 +23,10 @@ class View
 
   tabs: ->
     all: =>
+      for row in @data
+        row.x = Math.random() * @width
+        row.y = Math.random() * @height
+
       group = new Group(@element.selectAll('.node').data(@data).enter())
       circle = group.append(new Circle())
       label = group.append(new Label())

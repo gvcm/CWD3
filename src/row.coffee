@@ -1,6 +1,6 @@
 class Row
   constructor: (record) ->
-    @weight = parseInt(record.scoreN, 10)
+    @scoreN = parseInt(record.scoreN, 10)
     @score = []
     for num in [1..5]
       str = record['score' + num]
