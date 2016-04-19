@@ -3,9 +3,4 @@ table = new Table('data.csv', ->
   $('[data-view]').click(->
     view.render($(this).data('view'))
   )
-  $('[data-toggle="popover"]').popover(
-    container: 'body'
-    trigger: 'hover'
-    html: true
-  )
 )

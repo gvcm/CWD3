@@ -1,13 +1,17 @@
 class Circle
   build: (parent) ->
     @element = parent.append('circle')
+      .filter((data) ->
+        !data.children
+      )
       .attr('r', 0)
       .attr('fill', @fill)
-      .attr('stroke-width', 0)
+      .attr('stroke-width', 1)
+      .attr('stroke', 'black')
     @
 
   radius: (data) =>
-    Circle.radiusScale(data.scoreN)
+    if data.r? then Circle.linearRadiusScale(data.r) else  Circle.sqrtRadiusScale(data.scoreN)
 
   fill: (data) ->
     Circle.backgroundPallete(data.group)
@@ -19,6 +23,7 @@ class Circle
     .domain(['SPEC', 'CW', 'T', 'L', 'F2', 'F1', 'Z', 'C', 'D'])
     .range(['#ff0000', '#000000', '#595959', '#85898f', '#e89e78', '#3f9657', '#b3c841','#efb052', '#5d3b5a'])
 
-  @radiusScale = d3.scale.sqrt()
+  @linearRadiusScale = d3.scale.linear()
+  @sqrtRadiusScale = d3.scale.sqrt()
     .domain([0, 100])
     .range([5, 5 + (Math.sqrt(100 / Math.PI) * 10)])

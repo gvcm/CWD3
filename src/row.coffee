@@ -1,6 +1,7 @@
 class Row
   constructor: (record) ->
     @scoreN = parseInt(record.scoreN, 10)
+    @value = (Row.weightScale(@scoreN) + 1) # pack layout
     @score = []
     for num in [1..5]
       str = record['score' + num]
@@ -14,3 +15,5 @@ class Row
     @group = record.group
     @description = record.description
     @link = record.link
+
+  @weightScale = d3.scale.pow().exponent(0.8)

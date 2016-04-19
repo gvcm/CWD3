@@ -1,6 +1,7 @@
 class Group
   constructor: (nodes) ->
     @element = nodes.append('g')
+      .attr('transform', @translate)
       .attr('data-toggle', 'popover')
       .attr('title', @title)
       .attr('data-content', @dataContent)
@@ -45,7 +46,7 @@ class Group
       window.open(data.link, '_blank')
 
   dataContent: (data, index) ->
-    if index > 0
+    if data.total? and data.score? and data.group? and data.description?
       "
       <table>
         <tr><td style=\"text-align:right\"><strong>Total:</strong></td><td>&nbsp;&nbsp;&nbsp;#{data.total}</td></tr>
@@ -53,8 +54,11 @@ class Group
         <tr><td style=\"text-align:right\"><strong>Group:</strong></td><td>&nbsp;&nbsp;&nbsp;#{data.group}</td></tr>
         <tr><td colspan=\"2\">#{data.description}</td></tr>
       </table>"
-    else
+    else if data.title?
       data.title
+
+  translate: (data, index) ->
+    "translate(#{data.x},#{data.y})"
 
   transform: (func) ->
     @element.attr 'transform', func

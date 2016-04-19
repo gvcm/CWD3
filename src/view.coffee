@@ -12,48 +12,66 @@ class View
     @render('all')
 
   render: (tab) ->
+    for row in @data
+      row.x = Math.random() * @width
+      row.y = Math.random() * @height
     @element.selectAll('*').remove()
-    @tabs()[tab]()
-
+    @[tab + 'Tab']()
+    $('[data-toggle="popover"]').popover(
+      container: 'body'
+      trigger: 'hover'
+      html: true
+    )
+    
   center: ->
     window.scrollTo(0, @height / 4)
 
   scrollLock: (lock) ->
     $('body').css('overflow', (if lock then 'hidden' else 'scroll'))
 
-  tabs: ->
-    all: =>
-      for row in @data
-        row.x = Math.random() * @width
-        row.y = Math.random() * @height
+  allTab: ->
+    group = new Group(@element.selectAll('.node').data(@data).enter())
+    circle = group.append(new Circle())
+    label = group.append(new Label())
+    total = new Text(@element)
 
-      group = new Group(@element.selectAll('.node').data(@data).enter())
-      circle = group.append(new Circle())
-      label = group.append(new Label())
-      total = new Text(@element)
+    @center()
+    @scrollLock(true)
 
-      @center()
-      @scrollLock(true)
+    circle.show()
+    label.show()
 
-      circle.show()
-      label.show()
+    group.cluster(@width, @height)
+      .on('forceEnd', =>
+        b = group.boundary()
+        total.translate(((b.x1 + b.x2) / 2.0) - 15, b.y2 + 50)
+        total.text("TOTAL=#{group.total()}")
+        @scrollLock(false)
+      )
 
-      group.cluster(@width, @height)
-        .on('forceEnd', =>
-          b = group.boundary()
-          total.translate(((b.x1 + b.x2) / 2.0) - 15, b.y2 + 50)
-          total.text("TOTAL=#{group.total()}")
-          @scrollLock(false)
-        )
+  categoryTab: ->
+    nodes = new Hierarchy(@data)
+      .group('group')
+      .name('title')
+      .nodes()
 
-    group: =>
-      console.log('TODO group')
+    pack = d3.layout.pack()
+      .sort(null)
+      .size([@width, @height])
+    
+    group = new Group(@element.selectAll('.node').data(pack.nodes(nodes)).enter())
+    circle = group.append(new Circle())
+    label = group.append(new Label())
+    @center()
+    @scrollLock(true)
+    circle.show()
+    label.show()
 
-    score: =>
-      console.log('TODO score')
+  scoreTab: ->
+    console.log('TODO score')
 
-    criteria: =>
-      console.log('TODO criteria')
+  criteriaTab: ->
+    console.log('TODO criteria')
 
-    popularity: =>
-      console.log('TODO popularity')
+  popularityTab: ->
+    console.log('TODO popularity')
