@@ -13,8 +13,11 @@ class View
 
   render: (tab) ->
     for row in @data
+      # row.x = (@width/12.0)*10
+      # row.y = (@height/2.0
       row.x = Math.random() * @width
       row.y = Math.random() * @height
+
     @element.selectAll('*').remove()
     @[tab + 'Tab']()
     $('[data-toggle="popover"]').popover(
@@ -22,6 +25,9 @@ class View
       trigger: 'hover'
       html: true
     )
+
+  top: ->
+    window.scrollTo(0, 0)
     
   center: ->
     window.scrollTo(0, @height / 4)
@@ -41,7 +47,7 @@ class View
     circle.show()
     label.show()
 
-    group.cluster(@width, @height)
+    group.clusterize(@width, @height)
       .on('forceEnd', =>
         b = group.boundary()
         total.translate(((b.x1 + b.x2) / 2.0) - 15, b.y2 + 50)
@@ -50,22 +56,17 @@ class View
       )
 
   categoryTab: ->
-    nodes = new Hierarchy(@data)
-      .group('group')
-      .name('title')
-      .nodes()
-
-    pack = d3.layout.pack()
-      .sort(null)
-      .size([@width, @height])
-    
-    group = new Group(@element.selectAll('.node').data(pack.nodes(nodes)).enter())
+    group = new Group(@element.selectAll('.node').data(@data).enter())
     circle = group.append(new Circle())
     label = group.append(new Label())
-    @center()
+
+    @top()
     @scrollLock(true)
+
     circle.show()
     label.show()
+    
+    group.columnize(@width, @height)
 
   scoreTab: ->
     console.log('TODO score')

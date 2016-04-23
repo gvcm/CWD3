@@ -70,10 +70,10 @@ class Group
     return 0 if index == 0
     return -(data.total + 1) * 25
 
-  cluster: (width, height) ->
+  clusterize: (width, height) ->
 
     tick = (e) =>
-      @force.stop() if e.alpha < 0.03
+      @force.stop() if e.alpha < 0.04
       @transform((data, index) ->
         return "translate(#{(width/12.0)*10},#{height/2.0})" if index == 0
         "translate(#{data.x},#{data.y})"
@@ -108,3 +108,17 @@ class Group
   on: (event, callback) ->
     @callbacks[event] = callback
     @
+
+  @columns: (width) ->    
+    step = width / 10.0
+    d3.scale.ordinal()
+      .domain(['SPEC', 'CW', 'T', 'L', 'F2', 'F1', 'Z', 'C', 'D'])
+      .range(d3.range(step, step * 10, step))
+
+  columnize: (width, height) ->
+    columns = Group.columns(width)
+    @element.transition()
+    .duration(3000)
+    .attr('transform', (data, index) =>
+      "translate(#{columns(data.group)},300)"
+    )
