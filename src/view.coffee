@@ -50,7 +50,7 @@ class View
     circle.show()
     label.show()
 
-    group.clusterize(@width, @height)
+    group.all(@width, @height)
       .on('forceEnd', =>
         b = group.boundary()
         total.translate(((b.x1 + b.x2) / 2.0) - 15, b.y2 + 50)
@@ -69,7 +69,7 @@ class View
     circle.show()
     label.show()
     
-    group.columnize(@width, @height)
+    group.byCategory(@width, @height)
 
   scoreTab: ->
     console.log('TODO score')
@@ -78,4 +78,14 @@ class View
     console.log('TODO criteria')
 
   popularityTab: ->
-    console.log('TODO popularity')
+    group = new Group(@element.selectAll('.node').data(@data).enter())
+    circle = group.append(new Circle())
+    label = group.append(new Label())
+
+    @top()
+    @scrollLock(true)
+
+    circle.show()
+    label.show()
+    
+    group.byPopularity(@width, @height)

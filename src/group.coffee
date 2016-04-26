@@ -70,7 +70,7 @@ class Group
     return 0 if index == 0
     return -(data.total + 1) * 25
 
-  clusterize: (width, height) ->
+  all: (width, height) ->
 
     tick = (e) =>
       @force.stop() if e.alpha < 0.04
@@ -118,7 +118,23 @@ class Group
       .domain(Group.array)
       .range(d3.range(step, step * 10, step))
 
-  columnize: (width, height) ->
+  byCategory: (width, height) ->
+    posy = {}
+    columns = Group.columns(width)
+
+    for group in  Group.array
+      text = new Text(View.currentInstance.element)
+      text.text(group)
+      text.translate(columns(group), 200)
+
+    @element.transition()
+    .duration(3000)
+    .attr('transform', (data, index) =>
+      posy[data.group] = if posy[data.group]? then posy[data.group] + Math.sqrt(data.value * 500) else 1
+      "translate(#{columns(data.group)},#{posy[data.group] + 300})"
+    )
+  
+  byPopularity: (width, height) ->
     posy = {}
     columns = Group.columns(width)
 
