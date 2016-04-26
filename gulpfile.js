@@ -68,8 +68,8 @@ gulp.task('fonts', function() {
 gulp.task('watch', function () {
   livereload.listen()
   gulp.watch(['public/index.html'], ['html']);
-  gulp.watch(['src/**/*.coffee'], ['scripts', 'html']);
-  gulp.watch(['src/**/*.scss'], ['styles', 'html'])
+  gulp.watch(['src/**/*.coffee'], ['scripts']);
+  gulp.watch(['src/**/*.scss'], ['styles'])
 });
 
 gulp.task('default', [

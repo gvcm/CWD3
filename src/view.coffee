@@ -1,4 +1,6 @@
 class View
+  @currentInstance: null
+  
   constructor: (selector, data) ->
     $container = $(selector)
     $container.height($(window).height() - $container.position().top)
@@ -10,6 +12,7 @@ class View
       .attr('height', @height)
     @data = data
     @render('all')
+    View.currentInstance = @
 
   render: (tab) ->
     for row in @data

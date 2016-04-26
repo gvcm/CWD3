@@ -83,8 +83,9 @@ class Group
       @callbacks['forceEnd']() if @callbacks['forceEnd']?
 
     @element.data()[0].fixed = true
-    
+
     @force = d3.layout.force()
+      # this.element.filter(function(data) { return data.group == 'D' });
       .nodes(@element.data())
       .size([(width/12)*10, height])
       .gravity(0.2)
@@ -109,16 +110,26 @@ class Group
     @callbacks[event] = callback
     @
 
+  @array: ['SPEC', 'CW', 'T', 'L', 'F2', 'F1', 'Z', 'C', 'D']
+
   @columns: (width) ->    
     step = width / 10.0
     d3.scale.ordinal()
-      .domain(['SPEC', 'CW', 'T', 'L', 'F2', 'F1', 'Z', 'C', 'D'])
+      .domain(Group.array)
       .range(d3.range(step, step * 10, step))
 
   columnize: (width, height) ->
+    posy = {}
     columns = Group.columns(width)
+
+    for group in  Group.array
+      text = new Text(View.currentInstance.element)
+      text.text(group)
+      text.translate(columns(group), 200)
+
     @element.transition()
     .duration(3000)
     .attr('transform', (data, index) =>
-      "translate(#{columns(data.group)},300)"
+      posy[data.group] = if posy[data.group]? then posy[data.group] + Math.sqrt(data.value * 500) else 1
+      "translate(#{columns(data.group)},#{posy[data.group] + 300})"
     )
