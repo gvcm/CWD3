@@ -1,6 +1,6 @@
 class Group
   constructor: (nodes) ->
-    @element = nodes.append('g')
+    @selection = nodes.append('g')
       .attr('transform', @translate)
       .attr('data-toggle', 'popover')
       .attr('title', @title)
@@ -15,8 +15,8 @@ class Group
 
   mouseover: (x) ->
     group = d3.select(this)
-    groupElement = group[0][0]
-    groupElement.parentNode.appendChild(groupElement)
+    groupNode = group.node()
+    groupNode.parentNode.appendChild(groupNode)
     circle = group.selectAll('circle')
     circle
       .attr('data-prev-stroke', circle.attr('stroke'))
@@ -26,9 +26,9 @@ class Group
 
   mouseout: (x) ->
     group = d3.select(this)
-    groupElement = group[0][0]
-    parentNode = groupElement.parentNode
-    parentNode.insertBefore(groupElement, parentNode.firstChild)
+    groupNode = group.node()
+    parentNode = groupNode.parentNode
+    parentNode.insertBefore(groupNode, parentNode.firstChild)
     circle = group.selectAll('circle')
     circle
       .attr('stroke', circle.attr('data-prev-stroke'))
@@ -61,20 +61,21 @@ class Group
     "translate(#{data.x},#{data.y})"
 
   transform: (func) ->
-    @element.attr 'transform', func
+    @selection.attr 'transform', func
 
   append: (child) ->
-    child.build(@element)
+    child.build(@selection)
 
   charge: (data, index) ->
     return 0 if index == 0
     return -(data.total + 1) * 25
 
   all: (width, height) ->
-
+    
     tick = (e) =>
-      @force.stop() if e.alpha < 0.04
+      @force.stop() if e.alpha < 0.01
       @transform((data, index) ->
+        d3.select(this).attr('tick-alpha', e.alpha)
         return "translate(#{(width/12.0)*10},#{height/2.0})" if index == 0
         "translate(#{data.x},#{data.y})"
       )
@@ -82,11 +83,9 @@ class Group
     end = (e) =>
       @callbacks['forceEnd']() if @callbacks['forceEnd']?
 
-    @element.data()[0].fixed = true
-
     @force = d3.layout.force()
       # this.element.filter(function(data) { return data.group == 'D' });
-      .nodes(@element.data())
+      .nodes(@selection.data())
       .size([(width/12)*10, height])
       .gravity(0.2)
       .charge(@charge)
@@ -94,17 +93,17 @@ class Group
       .on('end', end)
       .start()
 
-    @element.call(@force.drag)
+    @selection.call(@force.drag)
     @
 
   boundary: ->
-    data = @element.data().slice(1)
+    data = @selection.data().slice(1)
     x = data.map((row) -> row.x)
     y = data.map((row) -> row.y)
     { x1: d3.min(x), x2: d3.max(x), y1: d3.min(y), y2: d3.max(y) }
 
   total: ->
-    @element.data().length
+    @selection.data().length
 
   on: (event, callback) ->
     @callbacks[event] = callback
@@ -127,7 +126,7 @@ class Group
       text.text(group)
       text.translate(columns(group), 200)
 
-    @element.transition()
+    @selection.transition()
     .duration(3000)
     .attr('transform', (data, index) =>
       posy[data.group] = if posy[data.group]? then posy[data.group] + Math.sqrt(data.value * 500) else 1
@@ -143,7 +142,7 @@ class Group
       text.text(group)
       text.translate(columns(group), 200)
 
-    @element.transition()
+    @selection.transition()
     .duration(3000)
     .attr('transform', (data, index) =>
       posy[data.group] = if posy[data.group]? then posy[data.group] + Math.sqrt(data.value * 500) else 1

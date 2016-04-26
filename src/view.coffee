@@ -1,6 +1,4 @@
 class View
-  @currentInstance: null
-  
   constructor: (selector, data) ->
     $container = $(selector)
     $container.height($(window).height() - $container.position().top)
@@ -10,24 +8,32 @@ class View
       .append('svg')
       .attr('width', @width)
       .attr('height', @height)
-    @data = data
-    @render('all')
-    View.currentInstance = @
 
-  render: (tab) ->
-    for row in @data
-      # row.x = (@width/12.0)*10
-      # row.y = (@height/2.0
-      row.x = Math.random() * @width
-      row.y = Math.random() * @height
+    @group = new Group(@element.selectAll('.node').data(data).enter())
+    circle = @group.append(new Circle())
+    label = @group.append(new Label())
+    circle.show()
+    label.show()
 
-    @element.selectAll('*').remove()
-    @[tab + 'Tab']()
     $('[data-toggle="popover"]').popover(
       container: 'body'
       trigger: 'hover'
       html: true
     )
+
+    @render('all')
+
+  render: (tab) ->
+    halfWidth = @width/2.0
+    halfHeight = @height/2.0
+    d3.selectAll('g')
+      .attr('transform', (data) ->
+        theta = 2 * Math.PI * Math.random()
+        rx = (halfWidth*Math.random())*Math.cos(theta)+halfWidth
+        ry = (halfHeight*Math.random())*Math.sin(theta)+halfHeight
+        "translate(#{rx},#{ry})"
+      )
+    @[tab + 'Tab']()
 
   top: ->
     window.scrollTo(0, 0)
@@ -39,22 +45,14 @@ class View
     $('body').css('overflow', (if lock then 'hidden' else 'scroll'))
 
   allTab: ->
-    group = new Group(@element.selectAll('.node').data(@data).enter())
-    circle = group.append(new Circle())
-    label = group.append(new Label())
     total = new Text(@element)
-
     @center()
     @scrollLock(true)
-
-    circle.show()
-    label.show()
-
-    group.all(@width, @height)
+    @group.all(@width, @height)
       .on('forceEnd', =>
-        b = group.boundary()
+        b = @group.boundary()
         total.translate(((b.x1 + b.x2) / 2.0) - 15, b.y2 + 50)
-        total.text("TOTAL=#{group.total()}")
+        total.text("TOTAL=#{@group.total()}")
         @scrollLock(false)
       )
 

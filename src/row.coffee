@@ -15,5 +15,7 @@ class Row
     @group = record.group
     @description = record.description
     @link = record.link
+    @x = 0
+    @y = 0
 
   @weightScale = d3.scale.pow().exponent(0.8)
