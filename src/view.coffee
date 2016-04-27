@@ -4,12 +4,12 @@ class View
     $container.height($(window).height() - $container.position().top)
     @width = $container.width()
     @height = $container.height() * 2
-    @element = d3.select(selector)
+    @selection = d3.select(selector)
       .append('svg')
       .attr('width', @width)
       .attr('height', @height)
 
-    @group = new Group(@element.selectAll('.node').data(data).enter())
+    @group = new Group(@selection.selectAll('.node').data(data).enter())
     circle = @group.append(new Circle())
     label = @group.append(new Label())
     circle.show()
@@ -29,8 +29,8 @@ class View
     d3.selectAll('g')
       .attr('transform', (data) ->
         theta = 2 * Math.PI * Math.random()
-        rx = (halfWidth*Math.random())*Math.cos(theta)+halfWidth
-        ry = (halfHeight*Math.random())*Math.sin(theta)+halfHeight
+        rx = halfWidth*Math.cos(theta)+halfWidth
+        ry = halfHeight*Math.sin(theta)+halfHeight
         "translate(#{rx},#{ry})"
       )
     @[tab + 'Tab']()
@@ -45,7 +45,7 @@ class View
     $('body').css('overflow', (if lock then 'hidden' else 'scroll'))
 
   allTab: ->
-    total = new Text(@element)
+    total = new Text(@selection)
     @center()
     @scrollLock(true)
     @group.all(@width, @height)
@@ -57,7 +57,7 @@ class View
       )
 
   categoryTab: ->
-    group = new Group(@element.selectAll('.node').data(@data).enter())
+    group = new Group(@selection.selectAll('.node').data(@data).enter())
     circle = group.append(new Circle())
     label = group.append(new Label())
 
@@ -76,7 +76,7 @@ class View
     console.log('TODO criteria')
 
   popularityTab: ->
-    group = new Group(@element.selectAll('.node').data(@data).enter())
+    group = new Group(@selection.selectAll('.node').data(@data).enter())
     circle = group.append(new Circle())
     label = group.append(new Label())
 
