@@ -1,7 +1,6 @@
 class Group
   constructor: (nodes) ->
     @selection = nodes.append('g')
-      .attr('transform', @translate)
       .attr('data-toggle', 'popover')
       .attr('title', @title)
       .attr('data-content', @dataContent)
@@ -35,10 +34,10 @@ class Group
       .attr('stroke-width', circle.attr('data-prev-stroke-width'))
 
   placement: (data, index) ->
-    if index > 0 then 'right' else 'left'
+    if data.group == 'SPEC' then 'left' else 'right'
     
   title: (data, index) ->
-    data.title if index > 0
+    data.title unless data.group == 'SPEC'
 
   click: (data) ->
     return if d3.event.defaultPrevented
@@ -57,9 +56,6 @@ class Group
     else if data.title?
       data.title
 
-  translate: (data, index) ->
-    "translate(#{data.x},#{data.y})"
-
   transform: (func) ->
     @selection.attr 'transform', func
 
@@ -67,25 +63,24 @@ class Group
     child.build(@selection)
 
   charge: (data, index) ->
-    return 0 if index == 0
-    return -(data.total + 1) * 25
+    -(data.total + 1) * 25
 
   all: (width, height) ->
     
     tick = (e) =>
       @force.stop() if e.alpha < 0.01
-      @transform((data, index) ->
-        d3.select(this).attr('tick-alpha', e.alpha)
-        return "translate(#{(width/12.0)*10},#{height/2.0})" if index == 0
-        "translate(#{data.x},#{data.y})"
-      )
+      @transform((data, index) -> "translate(#{data.x},#{data.y})")
 
     end = (e) =>
       @callbacks['forceEnd']() if @callbacks['forceEnd']?
 
+    spec = @selection.filter((data) -> data.group == 'SPEC')
+    spec.attr('transform', -> "translate(#{(width/12.0)*10},#{height/2.0})")
+    # not working
+
+    nodes = @selection.filter((data) -> data.group != 'SPEC')
     @force = d3.layout.force()
-      # this.element.filter(function(data) { return data.group == 'D' });
-      .nodes(@selection.data())
+      .nodes(nodes.data())
       .size([(width/12)*10, height])
       .gravity(0.2)
       .charge(@charge)
@@ -93,35 +88,35 @@ class Group
       .on('end', end)
       .start()
 
-    @selection.call(@force.drag)
+    nodes.call(@force.drag)
     @
 
   boundary: ->
-    data = @selection.data().slice(1)
+    data = @selection.filter((data) -> data.group != 'SPEC').data()
     x = data.map((row) -> row.x)
     y = data.map((row) -> row.y)
     { x1: d3.min(x), x2: d3.max(x), y1: d3.min(y), y2: d3.max(y) }
 
   total: ->
-    @selection.data().length
+    @selection.data().length - 1
 
   on: (event, callback) ->
     @callbacks[event] = callback
     @
 
-  @array: ['SPEC', 'CW', 'T', 'L', 'F2', 'F1', 'Z', 'C', 'D']
+  @categories: ['SPEC', 'CW', 'T', 'L', 'F2', 'F1', 'Z', 'C', 'D']
 
   @columns: (width) ->    
     step = width / 10.0
     d3.scale.ordinal()
-      .domain(Group.array)
+      .domain(Group.categories)
       .range(d3.range(step, step * 10, step))
 
   byCategory: (width, height) ->
     posy = {}
     columns = Group.columns(width)
 
-    for group in  Group.array
+    for category in Group.categories
       text = new Text(View.currentInstance.element)
       text.text(group)
       text.translate(columns(group), 200)
@@ -137,7 +132,7 @@ class Group
     posy = {}
     columns = Group.columns(width)
 
-    for group in  Group.array
+    for category in Group.categories
       text = new Text(View.currentInstance.element)
       text.text(group)
       text.translate(columns(group), 200)
