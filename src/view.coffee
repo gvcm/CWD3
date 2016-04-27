@@ -1,4 +1,7 @@
 class View
+  @getInstance: ->
+    Circle._object
+
   constructor: (selector, data) ->
     $container = $(selector)
     $container.height($(window).height() - $container.position().top)
@@ -9,9 +12,9 @@ class View
       .attr('width', @width)
       .attr('height', @height)
 
-    @group = new Group(@selection.selectAll('g').data(data).enter())
-    new Circle(@group.selection)
-    new Label(@group.selection)
+    group = new Group(@selection.selectAll('g').data(data).enter())
+    new Circle(group.selection)
+    new Label(group.selection)
 
     $('[data-toggle="popover"]').popover(
       container: 'body'
@@ -20,6 +23,7 @@ class View
     )
 
     @render('all')
+    View._object = @
 
   render: (tab) ->
     Circle.getInstance().hide()
@@ -48,28 +52,26 @@ class View
       .css('overflow-y', (if lock then 'hidden' else 'scroll'))
 
   allTab: ->
+    group = Group.getInstance()
     total = new Text(@selection)
     @center()
     @scrollLock(true)
-    @group.all(@width, @height)
+    group.all(@width, @height)
       .on('forceEnd', =>
-        b = @group.boundary()
+        b = group.boundary()
         total.translate(((b.x1 + b.x2) / 2.0) - 15, b.y2 + 50)
-        total.text("TOTAL=#{@group.total()}")
+        total.text("TOTAL=#{group.total()}")
         @scrollLock(false)
       )
 
   categoryTab: ->
-    group = new Group(@selection.selectAll('.node').data(@data).enter())
-    circle = group.append(new Circle())
-    label = group.append(new Label())
-
     @top()
     @scrollLock(true)
 
-    circle.show()
-    label.show()
-    
+    Circle.getInstance().show()
+    Label.getInstance().show()
+
+    group = Group.getInstance()    
     group.byCategory(@width, @height)
 
   scoreTab: ->

@@ -123,9 +123,9 @@ class Group
     columns = Group.columns(width)
 
     for category in Group.categories
-      text = new Text(View.currentInstance.element)
-      text.text(group)
-      text.translate(columns(group), 200)
+      text = new Text(View.getInstance().selection)
+      text.text(category)
+      text.translate(columns(category), 200)
 
     @selection.transition()
     .duration(3000)
