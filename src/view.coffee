@@ -10,6 +10,7 @@ class View
       .attr('height', @height)
 
     @group = new Group(@selection.selectAll('.node').data(data).enter())
+    ## @selection.classed('node', true)...
     circle = @group.append(new Circle())
     label = @group.append(new Label())
     circle.show()

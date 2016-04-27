@@ -63,27 +63,28 @@ class Group
     child.build(@selection)
 
   charge: (data, index) ->
-    -(data.total + 1) * 10
+    -(data.total + 1) * 20
 
   all: (width, height) ->
-    
+    spec = @selection.filter((data) -> data.group == 'SPEC')
+    nodes = @selection.filter((data) -> data.group != 'SPEC')
+
     tick = (e) =>
-      @force.stop() if e.alpha < 0.02
+      @force.stop() if e.alpha < 0.04
       @transform((data, index) -> "translate(#{data.x},#{data.y})")
 
     end = (e) =>
       @callbacks['forceEnd']() if @callbacks['forceEnd']?
-      spec = @selection.filter((data) -> data.group == 'SPEC')
       spec.transition()
         .duration(500)
         .attr('transform', -> "translate(#{(width/12.0)*10},#{height/2.0})")
 
-    nodes = @selection.filter((data) -> data.group != 'SPEC')
     @force = d3.layout.force()
       .nodes(nodes.data())
       .size([(width/12)*10, height])
-      .gravity(0.1)
+      .gravity(0.2)
       .charge(@charge)
+      .friction(0.8)
       .on('tick', tick)
       .on('end', end)
       .start()
