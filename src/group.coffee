@@ -1,4 +1,7 @@
 class Group
+  @getInstance: ->
+    Group._object
+
   constructor: (nodes) ->
     @selection = nodes.append('g')
       .attr('data-toggle', 'popover')
@@ -10,7 +13,7 @@ class Group
       .on('click', @click)
     @callbacks = {}
     @force = null
-    @
+    Group._object = @
 
   mouseover: (x) ->
     group = d3.select(this)
@@ -59,25 +62,28 @@ class Group
   transform: (func) ->
     @selection.attr 'transform', func
 
-  append: (child) ->
-    child.build(@selection)
-
   charge: (data, index) ->
-    -(data.total + 1) * 20
+    -(data.total + 1) * 25
 
   all: (width, height) ->
     spec = @selection.filter((data) -> data.group == 'SPEC')
     nodes = @selection.filter((data) -> data.group != 'SPEC')
 
+    spec.transition()
+      .duration(500)
+      .attr('transform', -> "translate(#{(width/12.0)*10},#{height/2.0})")
+
     tick = (e) =>
-      @force.stop() if e.alpha < 0.04
-      @transform((data, index) -> "translate(#{data.x},#{data.y})")
+      if e.alpha < 0.04
+        @force.stop()
+        nodes.transition()
+          .duration(2000)
+          .attr('transform', (data) -> "translate(#{data.x},#{data.y})")
+        Circle.getInstance().show()
+        Label.getInstance().show()
 
     end = (e) =>
       @callbacks['forceEnd']() if @callbacks['forceEnd']?
-      spec.transition()
-        .duration(500)
-        .attr('transform', -> "translate(#{(width/12.0)*10},#{height/2.0})")
 
     @force = d3.layout.force()
       .nodes(nodes.data())
@@ -89,8 +95,6 @@ class Group
       .on('end', end)
       .start()
     
-    nodes.call(@force.drag)
-
     @
 
   boundary: ->

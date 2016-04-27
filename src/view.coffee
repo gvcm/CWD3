@@ -9,12 +9,9 @@ class View
       .attr('width', @width)
       .attr('height', @height)
 
-    @group = new Group(@selection.selectAll('.node').data(data).enter())
-    ## @selection.classed('node', true)...
-    circle = @group.append(new Circle())
-    label = @group.append(new Label())
-    circle.show()
-    label.show()
+    @group = new Group(@selection.selectAll('g').data(data).enter())
+    new Circle(@group.selection)
+    new Label(@group.selection)
 
     $('[data-toggle="popover"]').popover(
       container: 'body'
@@ -25,6 +22,9 @@ class View
     @render('all')
 
   render: (tab) ->
+    Circle.getInstance().hide()
+    Label.getInstance().hide()
+    d3.selectAll('.volatile').remove()
     halfWidth = @width/2.0
     halfHeight = @height/2.0
     d3.selectAll('g')
@@ -43,7 +43,9 @@ class View
     window.scrollTo(0, @height / 4)
 
   scrollLock: (lock) ->
-    $('body').css('overflow', (if lock then 'hidden' else 'scroll'))
+    $('body')
+      .css('overflow-x', 'hidden')
+      .css('overflow-y', (if lock then 'hidden' else 'scroll'))
 
   allTab: ->
     total = new Text(@selection)

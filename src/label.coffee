@@ -1,21 +1,26 @@
 class Label
+  @getInstance: ->
+    Label._object
 
-  build: (parent) ->
-    @element = parent.append('text')
+  constructor: (nodes) ->
+    @selection = nodes.append('text')
       .attr('opacity', 0)
       .attr('text-anchor', 'middle')
       .attr('font-size', @fontSize)
       .attr('fill', @color)
-    @element.append('tspan')
+    @selection.append('tspan')
       .text(@short)
-    @element.append('tspan')
+    @selection.append('tspan')
       .attr('x', 0)
       .attr('dy', @lineHeight)
       .text(@scoreN)
-    @
+    Label._object = @
 
   show: ->
-    @element.transition().duration(1000).attr('opacity', 1)
+    @selection.transition().duration(1000).attr('opacity', 1)
+
+  hide: ->
+    @selection.attr('opacity', 0)
 
   short: (data, index) ->
     if index < Label.shortLabels.length

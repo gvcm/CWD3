@@ -1,20 +1,21 @@
 class Text
   constructor: (parent) ->
-    @element = parent.append('text')
+    @selection = parent.append('text')
+      .classed('volatile', true)
       .attr('font-weight', 'bold')
       .text('')
     @
 
   translate: (x, y) ->
-    @element.attr 'transform', "translate(#{x},#{y})"
+    @selection.attr 'transform', "translate(#{x},#{y})"
 
   hide: ->
-    @element.attr('opacity', 0)
+    @selection.attr('opacity', 0)
 
   show: ->
-    @element.transition().duration(1000).attr('opacity', 1)
+    @selection.transition().duration(1000).attr('opacity', 1)
 
   text: (text) ->
     @hide()
-    @element.text(text)
+    @selection.text(text)
     @show()
