@@ -63,6 +63,8 @@ class View
     console.log('TODO score')
 
   criteriaTab: ->
+    for row in @data
+      console.log(row)
     console.log('TODO criteria')
 
   popularityTab: ->
