@@ -19,13 +19,14 @@ class View
       html: true
     )
 
-    @render('all')
+    @render()
     View._instance = @
 
   @getSelection: ->
     View._instance.selection
 
   render: (tab) ->
+    tab = 'default' unless tab?
     Circle.hide()
     Label.hide()
     d3.selectAll('.volatile').remove()
@@ -51,12 +52,12 @@ class View
       .css('overflow-x', 'hidden')
       .css('overflow-y', (if lock then 'hidden' else 'scroll'))
 
-  allTab: ->
+  defaultTab: ->
     group = Group.getInstance()
     total = new Text(@selection)
     @center()
     @scrollLock(true)
-    group.all(@width, @height)
+    group.byDefault(@width, @height)
       .on('forceEnd', =>
         b = group.boundary()
         total.translate(((b.x1 + b.x2) / 2.0) - 15, b.y2 + 50)

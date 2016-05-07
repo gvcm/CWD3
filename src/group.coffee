@@ -65,7 +65,7 @@ class Group
   charge: (data, index) ->
     -(data.total + 1) * 25
 
-  all: (width, height) ->
+  byDefault: (width, height) ->
     spec = @selection.filter((data) -> data.group == 'SPEC')
     nodes = @selection.filter((data) -> data.group != 'SPEC')
 
