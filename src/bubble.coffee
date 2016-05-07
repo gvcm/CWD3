@@ -12,24 +12,21 @@ class Bubble
     @force = null
     @circle = new Circle(@selection)
     @label = new Label(@selection)
-    Bubble._instance = @
 
-  @getInstance: ->
-    Bubble._instance
+    @selection.attr('transform', (data) ->
+      theta = 2 * Math.PI * Math.random()
+      rx = 500*Math.cos(theta)+500
+      ry = 500*Math.sin(theta)+500
+      "translate(#{rx},#{ry})"
+    )
 
   show: ->
     @circle.show()
     @label.show()
 
-  @show: ->
-    Bubble._instance.show()
-
   hide: ->
     @circle.hide()
     @label.hide()
-
-  @hide: ->
-    Bubble._instance.hide()
 
   mouseover: (x) ->
     bubble = d3.select(this)
