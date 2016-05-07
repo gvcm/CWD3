@@ -64,7 +64,7 @@ class View
 
   criteriaTab: ->
     criteriaGroup = {}
-    for k, _ of Row.criteriaMap
+    for k, _ of Criteria.hashMap
       criteriaGroup[k] = [] unless criteriaGroup[k]?
       for row in @data
         if k in row.criteriaKeys
