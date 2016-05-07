@@ -10,10 +10,26 @@ class Group
       .on('click', @click)
     @callbacks = {}
     @force = null
+    @circle = new Circle(@selection)
+    @label = new Label(@selection)
     Group._instance = @
 
   @getInstance: ->
     Group._instance
+
+  show: ->
+    @circle.show()
+    @label.show()
+
+  @show: ->
+    Group._instance.show()
+
+  hide: ->
+    @circle.hide()
+    @label.hide()
+
+  @hide: ->
+    Group._instance.hide()
 
   mouseover: (x) ->
     group = d3.select(this)

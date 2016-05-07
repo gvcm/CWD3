@@ -9,9 +9,7 @@ class View
       .attr('width', @width)
       .attr('height', @height)
 
-    group = new Group(@selection.selectAll('g').data(data).enter())
-    new Circle(group.selection)
-    new Label(group.selection)
+    @group = new Group(@selection.selectAll('g').data(data).enter())
 
     $('[data-toggle="popover"]').popover(
       container: 'body'
@@ -27,8 +25,7 @@ class View
 
   render: (tab) ->
     tab = 'default' unless tab?
-    Circle.hide()
-    Label.hide()
+    @group.hide()
     d3.selectAll('.volatile').remove()
     halfWidth = @width/2.0
     halfHeight = @height/2.0
@@ -53,27 +50,22 @@ class View
       .css('overflow-y', (if lock then 'hidden' else 'scroll'))
 
   defaultTab: ->
-    group = Group.getInstance()
     total = new Text(@selection)
     @center()
     @scrollLock(true)
-    group.byDefault(@width, @height)
+    @group.byDefault(@width, @height)
       .on('forceEnd', =>
-        b = group.boundary()
+        b = @group.boundary()
         total.translate(((b.x1 + b.x2) / 2.0) - 15, b.y2 + 50)
-        total.text("TOTAL=#{group.total()}")
+        total.text("TOTAL=#{@group.total()}")
         @scrollLock(false)
       )
 
   categoryTab: ->
     @top()
     @scrollLock(true)
-
-    Circle.show()
-    Label.show()
-
-    group = Group.getInstance()    
-    group.byCategory(@width, @height)
+    @group.byCategory(@width, @height)
+    @group.show()
 
   scoreTab: ->
     console.log('TODO score')
@@ -82,14 +74,14 @@ class View
     console.log('TODO criteria')
 
   popularityTab: ->
-    group = new Group(@selection.selectAll('.node').data(@data).enter())
-    circle = group.append(new Circle())
-    label = group.append(new Label())
-
-    @top()
-    @scrollLock(true)
-
-    circle.show()
-    label.show()
-    
-    group.byPopularity(@width, @height)
+    # group = new Group(@selection.selectAll('.node').data(@data).enter())
+    # circle = group.append(new Circle())
+    # label = group.append(new Label())
+    # 
+    # @top()
+    # @scrollLock(true)
+    # 
+    # circle.show()
+    # label.show()
+    # 
+    # group.byPopularity(@width, @height)
