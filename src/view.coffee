@@ -9,7 +9,7 @@ class View
       .attr('width', @width)
       .attr('height', @height)
 
-    @group = new Group(@selection.selectAll('g').data(data).enter())
+    @bubble = new Bubble(@selection.selectAll('g').data(data).enter())
 
     $('[data-toggle="popover"]').popover(
       container: 'body'
@@ -25,7 +25,7 @@ class View
 
   render: (tab) ->
     tab = 'default' unless tab?
-    @group.hide()
+    @@bubble.hide()
     d3.selectAll('.volatile').remove()
     halfWidth = @width/2.0
     halfHeight = @height/2.0
@@ -53,19 +53,19 @@ class View
     total = new Text(@selection)
     @center()
     @scrollLock(true)
-    @group.byDefault(@width, @height)
+    @bubble.byDefault(@width, @height)
       .on('forceEnd', =>
-        b = @group.boundary()
+        b = @bubble.boundary()
         total.translate(((b.x1 + b.x2) / 2.0) - 15, b.y2 + 50)
-        total.text("TOTAL=#{@group.total()}")
+        total.text("TOTAL=#{@bubble.total()}")
         @scrollLock(false)
       )
 
   categoryTab: ->
     @top()
     @scrollLock(true)
-    @group.byCategory(@width, @height)
-    @group.show()
+    @bubble.byCategory(@width, @height)
+    @bubble.show()
 
   scoreTab: ->
     console.log('TODO score')
@@ -74,7 +74,7 @@ class View
     console.log('TODO criteria')
 
   popularityTab: ->
-    # group = new Group(@selection.selectAll('.node').data(@data).enter())
+    # group = new Bubble(@selection.selectAll('.node').data(@data).enter())
     # circle = group.append(new Circle())
     # label = group.append(new Label())
     # 

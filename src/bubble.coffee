@@ -1,4 +1,4 @@
-class Group
+class Bubble
   constructor: (nodes) ->
     @selection = nodes.append('g')
       .attr('data-toggle', 'popover')
@@ -12,30 +12,30 @@ class Group
     @force = null
     @circle = new Circle(@selection)
     @label = new Label(@selection)
-    Group._instance = @
+    Bubble._instance = @
 
   @getInstance: ->
-    Group._instance
+    Bubble._instance
 
   show: ->
     @circle.show()
     @label.show()
 
   @show: ->
-    Group._instance.show()
+    Bubble._instance.show()
 
   hide: ->
     @circle.hide()
     @label.hide()
 
   @hide: ->
-    Group._instance.hide()
+    Bubble._instance.hide()
 
   mouseover: (x) ->
-    group = d3.select(this)
-    groupNode = group.node()
-    groupNode.parentNode.appendChild(groupNode)
-    circle = group.selectAll('circle')
+    bubble = d3.select(this)
+    bubbleNode = bubble.node()
+    bubbleNode.parentNode.appendChild(bubbleNode)
+    circle = bubble.selectAll('circle')
     circle
       .attr('data-prev-stroke', circle.attr('stroke'))
       .attr('data-prev-stroke-width', circle.attr('stroke-width'))
@@ -43,11 +43,11 @@ class Group
       .attr('stroke-width', 3)
 
   mouseout: (x) ->
-    group = d3.select(this)
-    groupNode = group.node()
-    parentNode = groupNode.parentNode
-    parentNode.insertBefore(groupNode, parentNode.firstChild)
-    circle = group.selectAll('circle')
+    bubble = d3.select(this)
+    bubbleNode = bubble.node()
+    parentNode = bubbleNode.parentNode
+    parentNode.insertBefore(bubbleNode, parentNode.firstChild)
+    circle = bubble.selectAll('circle')
     circle
       .attr('stroke', circle.attr('data-prev-stroke'))
       .attr('stroke-width', circle.attr('data-prev-stroke-width'))
@@ -69,7 +69,7 @@ class Group
       <table>
         <tr><td style=\"text-align:right\"><strong>Total:</strong></td><td>&nbsp;&nbsp;&nbsp;#{data.total}</td></tr>
         <tr><td style=\"text-align:right\"><strong>Scores 1–5:</strong></td><td>&nbsp;&nbsp;&nbsp;#{data.score.join(', ')}</td></tr>
-        <tr><td style=\"text-align:right\"><strong>Group:</strong></td><td>&nbsp;&nbsp;&nbsp;#{data.group}</td></tr>
+        <tr><td style=\"text-align:right\"><strong>Bubble:</strong></td><td>&nbsp;&nbsp;&nbsp;#{data.group}</td></tr>
         <tr><td colspan=\"2\">#{data.description}</td></tr>
       </table>"
     else if data.title?
@@ -131,14 +131,14 @@ class Group
   @columns: (width) ->    
     step = width / 10.0
     d3.scale.ordinal()
-      .domain(Group.categories)
+      .domain(Bubble.categories)
       .range(d3.range(step, step * 10, step))
 
   byCategory: (width, height) ->
     posy = {}
-    columns = Group.columns(width)
+    columns = Bubble.columns(width)
 
-    for category in Group.categories
+    for category in Bubble.categories
       text = new Text(View.getSelection())
       text.text(category)
       text.translate(columns(category), 200)
@@ -152,12 +152,12 @@ class Group
   
   byPopularity: (width, height) ->
     posy = {}
-    columns = Group.columns(width)
+    columns = Bubble.columns(width)
 
-    for category in Group.categories
+    for category in Bubble.categories
       text = new Text(View.currentInstance.element)
-      text.text(group)
-      text.translate(columns(group), 200)
+      # text.text(group)
+      # text.translate(columns(group), 200)
 
     @selection.transition()
     .duration(3000)
