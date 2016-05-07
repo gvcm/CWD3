@@ -15,15 +15,15 @@ class Row
     @group = record.group
     @description = record.description
     @link = record.link
-    @criterias = []
-    for criteria, _ of Row.criterias
-      @criterias.push(criteria) if record[criteria] == '1'
+    @criteriaKeys = []
+    for k, _ of Row.criteriaMap
+      @criteriaKeys.push(k) if record[k] == '1'
     @x = 0
     @y = 0
 
   @weightScale = d3.scale.pow().exponent(0.8)
 
-  @criterias =
+  @criteriaMap =
     '1_2_3':   '1.2.3 Frequência de Atualização'
     '1_3_1':   '1.3.1 Plataforma de Desenvolvimento'
     '1_3':     '1.3 Portabilidade da Aplicação'

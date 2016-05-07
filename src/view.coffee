@@ -63,9 +63,12 @@ class View
     console.log('TODO score')
 
   criteriaTab: ->
-    for row in @data
-      console.log(row)
-    console.log('TODO criteria')
+    criteriaGroup = {}
+    for k, _ of Row.criteriaMap
+      criteriaGroup[k] = [] unless criteriaGroup[k]?
+      for row in @data
+        if k in row.criteriaKeys
+          criteriaGroup[k].push(row)
 
   popularityTab: ->
     # group = new Bubble(@selection.selectAll('.node').data(@data).enter())
