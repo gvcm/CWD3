@@ -1,7 +1,4 @@
 class Label
-  @getInstance: ->
-    Label._object
-
   constructor: (nodes) ->
     @selection = nodes.append('text')
       .attr('opacity', 0)
@@ -14,13 +11,19 @@ class Label
       .attr('x', 0)
       .attr('dy', @lineHeight)
       .text(@scoreN)
-    Label._object = @
+    Label._instance = @
 
   show: ->
     @selection.transition().duration(1000).attr('opacity', 1)
 
+  @show: ->
+    Label._instance.show()
+
   hide: ->
     @selection.attr('opacity', 0)
+
+  @hide: ->
+    Label._instance.hide()
 
   short: (data, index) ->
     if index < Label.shortLabels.length

@@ -1,7 +1,4 @@
 class Circle
-  @getInstance: ->
-    Circle._object
-  
   constructor: (nodes) ->
     @selection = nodes.append('circle')
       .filter((data) -> !data.children)
@@ -9,7 +6,7 @@ class Circle
       .attr('fill', @fill)
       .attr('stroke-width', 1)
       .attr('stroke', 'black')
-    Circle._object = @
+    Circle._instance = @
 
   radius: (data) =>
     if data.r? then Circle.linearRadiusScale(data.r) else  Circle.sqrtRadiusScale(data.scoreN)
@@ -20,8 +17,14 @@ class Circle
   show: ->
     @selection.transition().duration(3000).attr('r', @radius);
 
+  @show: ->
+    Circle._instance.show()
+
   hide: ->
     @selection.attr('r', 0);
+
+  @hide: ->
+    Circle._instance.hide()
 
   @backgroundPallete = d3.scale.ordinal()
     .domain(['SPEC', 'CW', 'T', 'L', 'F2', 'F1', 'Z', 'C', 'D'])

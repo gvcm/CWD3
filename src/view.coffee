@@ -1,7 +1,4 @@
 class View
-  @getInstance: ->
-    Circle._object
-
   constructor: (selector, data) ->
     $container = $(selector)
     $container.height($(window).height() - $container.position().top)
@@ -23,11 +20,14 @@ class View
     )
 
     @render('all')
-    View._object = @
+    View._instance = @
+
+  @getSelection: ->
+    View._instance.selection
 
   render: (tab) ->
-    Circle.getInstance().hide()
-    Label.getInstance().hide()
+    Circle.hide()
+    Label.hide()
     d3.selectAll('.volatile').remove()
     halfWidth = @width/2.0
     halfHeight = @height/2.0
@@ -68,8 +68,8 @@ class View
     @top()
     @scrollLock(true)
 
-    Circle.getInstance().show()
-    Label.getInstance().show()
+    Circle.show()
+    Label.show()
 
     group = Group.getInstance()    
     group.byCategory(@width, @height)

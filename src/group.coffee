@@ -1,7 +1,4 @@
 class Group
-  @getInstance: ->
-    Group._object
-
   constructor: (nodes) ->
     @selection = nodes.append('g')
       .attr('data-toggle', 'popover')
@@ -13,7 +10,10 @@ class Group
       .on('click', @click)
     @callbacks = {}
     @force = null
-    Group._object = @
+    Group._instance = @
+
+  @getInstance: ->
+    Group._instance
 
   mouseover: (x) ->
     group = d3.select(this)
@@ -79,8 +79,8 @@ class Group
         nodes.transition()
           .duration(2000)
           .attr('transform', (data) -> "translate(#{data.x},#{data.y})")
-        Circle.getInstance().show()
-        Label.getInstance().show()
+        Circle.show()
+        Label.show()
 
     end = (e) =>
       @callbacks['forceEnd']() if @callbacks['forceEnd']?
@@ -123,7 +123,7 @@ class Group
     columns = Group.columns(width)
 
     for category in Group.categories
-      text = new Text(View.getInstance().selection)
+      text = new Text(View.getSelection())
       text.text(category)
       text.translate(columns(category), 200)
 
