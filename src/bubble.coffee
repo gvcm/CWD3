@@ -86,12 +86,20 @@ class Bubble
     -(data.total + 1) * 25
 
   byDefault: (width, height) ->
-    spec = @selection.filter((data) -> data.group == 'SPEC')
-    nodes = @selection.filter((data) -> data.group != 'SPEC')
+    showRef = View.showRef()
+    
+    if showRef
+      spec = @selection.filter((data) -> data.group == 'SPEC')
+      spec.transition()
+        .duration(500)
+        .attr('transform', -> "translate(#{(width/12.0)*10},#{height/2.0})")
 
-    spec.transition()
-      .duration(500)
-      .attr('transform', -> "translate(#{(width/12.0)*10},#{height/2.0})")
+    nodes = @selection.filter((data) ->
+      if showRef
+        data.group != 'SPEC'
+      else
+        data.group != 'SPEC' and data.group != 'CW'
+    )
 
     tick = (e) =>
       if e.alpha < 0.04
