@@ -78,9 +78,11 @@ class View
           criteriaGroup[k].push(clonedRow)
 
     counter = 0
-    numberOfColumns = 3
+    marginSize = 50
+    numberOfColumns = Math.ceil((@width - (2 * marginSize)) / 500)
     columnSize = @width / numberOfColumns
-    rowSize = @height / 2
+    numberOfRows = Math.ceil(@height / 400)
+    rowSize = @height / numberOfRows
     maxY = 0
 
     for k,d of criteriaGroup
@@ -92,8 +94,8 @@ class View
         nodeGroup = @selection.append('g')
           .attr('class', 'bubble-' + counter)
           .attr('transform', =>
-            rx = column * columnSize
-            ry = row * rowSize
+            rx = column * columnSize + (if column > 0 then 0 else marginSize)
+            ry = row * rowSize + marginSize
             maxY = ry if maxY < ry
             "translate(#{rx},#{ry})")
         bubble = new Bubble(nodeGroup.selectAll('g.bubble').data(d).enter())
