@@ -79,9 +79,9 @@ class View
 
     counter = 0
     marginSize = 50
-    numberOfColumns = Math.ceil((@width - (2 * marginSize)) / 500)
+    numberOfColumns = Math.ceil((@width - (2 * marginSize)) / 600)
     columnSize = @width / numberOfColumns
-    numberOfRows = Math.ceil(@height / 400)
+    numberOfRows = Math.ceil(@height / 500)
     rowSize = @height / numberOfRows
     maxY = 0
 
@@ -95,11 +95,17 @@ class View
           .attr('class', 'bubble-' + counter)
           .attr('transform', =>
             rx = column * columnSize + (if column > 0 then 0 else marginSize)
-            ry = row * rowSize + marginSize
+            ry = row * rowSize + (2 * marginSize)
             maxY = ry if maxY < ry
             "translate(#{rx},#{ry})")
+
         bubble = new Bubble(nodeGroup.selectAll('g.bubble').data(d).enter())
         bubble.byDefault(columnSize, rowSize)
+
+        criteriaText = new Text(nodeGroup)
+        criteriaText.text(Criteria.hashMap[k])
+        criteriaText.translate(marginSize, 0)
+        criteriaText.show()
     
     @setHeight(maxY + rowSize)
 
