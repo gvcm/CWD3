@@ -87,14 +87,4 @@ class View
         bubble.byDefault(Math.random() * @width, Math.random() * @height)
 
   popularityTab: ->
-    # group = new Bubble(@selection.selectAll('.node').data(@data).enter())
-    # circle = group.append(new Circle())
-    # label = group.append(new Label())
-    # 
-    # @top()
-    # @scrollLock(true)
-    # 
-    # circle.show()
-    # label.show()
-    # 
-    # group.byPopularity(@width, @height)
+    console.log('TODO')

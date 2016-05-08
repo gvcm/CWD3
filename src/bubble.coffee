@@ -94,8 +94,7 @@ class Bubble
         nodes.transition()
           .duration(2000)
           .attr('transform', (data) -> "translate(#{data.x},#{data.y})")
-        Circle.show()
-        Label.show()
+        @show()
 
     end = (e) =>
       @callbacks['forceEnd']() if @callbacks['forceEnd']?

@@ -16,14 +16,8 @@ class Label
   show: ->
     @selection.transition().duration(1000).attr('opacity', 1)
 
-  @show: ->
-    Label._instance.show()
-
   hide: ->
     @selection.attr('opacity', 0)
-
-  @hide: ->
-    Label._instance.hide()
 
   short: (data, index) ->
     if index < Label.shortLabels.length

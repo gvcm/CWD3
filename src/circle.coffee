@@ -6,7 +6,6 @@ class Circle
       .attr('fill', @fill)
       .attr('stroke-width', 1)
       .attr('stroke', 'black')
-    Circle._instance = @
 
   radius: (data) =>
     if data.r? then Circle.linearRadiusScale(data.r) else  Circle.sqrtRadiusScale(data.scoreN)
@@ -16,16 +15,10 @@ class Circle
 
   show: ->
     @selection.transition().duration(3000).attr('r', @radius);
-
-  @show: ->
-    Circle._instance.show()
-
+    
   hide: ->
     @selection.attr('r', 0);
-
-  @hide: ->
-    Circle._instance.hide()
-
+  
   @backgroundPallete = d3.scale.ordinal()
     .domain(['SPEC', 'CW', 'T', 'L', 'F2', 'F1', 'Z', 'C', 'D'])
     .range(['#ff0000', '#000000', '#595959', '#85898f', '#e89e78', '#3f9657', '#b3c841','#efb052', '#5d3b5a'])
