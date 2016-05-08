@@ -57,7 +57,8 @@ class Bubble
       .attr('stroke-width', circle.attr('data-prev-stroke-width'))
 
   placement: (data, index) ->
-    if data.group == 'SPEC' then 'left' else 'right'
+    # if data.group == 'SPEC' then 'left' else 'right'
+    'bottom'
     
   title: (data, index) ->
     data.title unless data.group == 'SPEC'

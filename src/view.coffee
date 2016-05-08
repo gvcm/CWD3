@@ -10,12 +10,6 @@ class View
       .attr('width', @width)
       .attr('height', @height)
 
-    $('[data-toggle="popover"]').popover(
-      container: 'body'
-      trigger: 'hover'
-      html: true
-    )
-
     @currentTab = null
     @render()
 
@@ -30,6 +24,12 @@ class View
     @top()
     @[tab + 'Tab']()
     @currentTab = tab
+
+    $('[data-toggle="popover"]').popover(
+      container: 'body'
+      trigger: 'hover'
+      html: true
+    )
 
   update: ->
     @render(@currentTab)
@@ -67,6 +67,8 @@ class View
     bubble = new Bubble(@selection.selectAll('g').data(@data).enter())
     bubble.byCategory(@width, @height)
     bubble.show()
+    @setHeight(14000)
+    @scrollLock(false)
 
   scoreTab: ->
     console.log('TODO score')
