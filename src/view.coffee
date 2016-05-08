@@ -106,6 +106,7 @@ class View
         criteriaText.text(Criteria.hashMap[k])
         criteriaText.translate(marginSize, 0)
         criteriaText.show()
+        @scrollLock(false)
     
     @setHeight(maxY + rowSize)
 
