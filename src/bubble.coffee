@@ -1,6 +1,8 @@
 class Bubble
-  constructor: (nodes) ->
+  constructor: (nodes, bubbleClass) ->
+    bubbleClass = 'bubble' unless bubbleClass?
     @selection = nodes.append('g')
+      .attr('class', bubbleClass)
       .attr('data-toggle', 'popover')
       .attr('title', @title)
       .attr('data-content', @dataContent)
@@ -107,7 +109,7 @@ class Bubble
       .on('tick', tick)
       .on('end', end)
       .start()
-    
+
     @
 
   boundary: ->

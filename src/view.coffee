@@ -64,11 +64,27 @@ class View
 
   criteriaTab: ->
     criteriaGroup = {}
-    for k, _ of Criteria.hashMap
+    for k,_ of Criteria.hashMap
       criteriaGroup[k] = [] unless criteriaGroup[k]?
       for row in @data
+        clonedRow = {}
+        for f,v of row
+          clonedRow[f] = v
         if k in row.criteriaKeys
-          criteriaGroup[k].push(row)
+          criteriaGroup[k].push(clonedRow)
+
+    counter = 0
+    for k,d of criteriaGroup
+      if d.length > 0
+        counter += 1
+        nodeGroup = @selection.append('g')
+          .attr('class', 'bubble-' + counter)
+          .attr('transform', =>
+            rx = Math.random()*@width
+            ry = Math.random()*@height
+            "translate(#{rx},#{ry})")
+        bubble = new Bubble(nodeGroup.selectAll('g.bubble').data(d).enter())
+        bubble.byDefault(Math.random() * @width, Math.random() * @height)
 
   popularityTab: ->
     # group = new Bubble(@selection.selectAll('.node').data(@data).enter())
