@@ -1,10 +1,10 @@
 class View
   constructor: (selector, data) ->
-    $container = $(selector)
-    $container.height($(window).height() - $container.position().top)
+    @$container = $(selector)
+    @$container.height($(window).height() - @$container.position().top)
     @data = data
-    @width = $container.width()
-    @height = $container.height() * 2
+    @width = @$container.width()
+    @height = @$container.height() * 2
     @selection = d3.select(selector)
       .append('svg')
       .attr('width', @width)
@@ -22,6 +22,10 @@ class View
   @getSelection: ->
     View._instance.selection
 
+  setHeight: (height) ->
+    @$container.height(height)
+    @selection.attr('height', height)
+    
   render: (tab) ->
     tab = 'default' unless tab?
     d3.selectAll('g').remove()
@@ -74,17 +78,28 @@ class View
           criteriaGroup[k].push(clonedRow)
 
     counter = 0
+    numberOfColumns = 3
+    columnSize = @width / numberOfColumns
+    rowSize = @height / 2
+    maxY = 0
+
     for k,d of criteriaGroup
-      if d.length > 0
+      if d.length > 2
+        row = Math.floor(counter / numberOfColumns)
+        column = counter % numberOfColumns
+
         counter += 1
         nodeGroup = @selection.append('g')
           .attr('class', 'bubble-' + counter)
           .attr('transform', =>
-            rx = Math.random()*@width
-            ry = Math.random()*@height
+            rx = column * columnSize
+            ry = row * rowSize
+            maxY = ry if maxY < ry
             "translate(#{rx},#{ry})")
         bubble = new Bubble(nodeGroup.selectAll('g.bubble').data(d).enter())
-        bubble.byDefault(Math.random() * @width, Math.random() * @height)
+        bubble.byDefault(columnSize, rowSize)
+    
+    @setHeight(maxY + rowSize)
 
   popularityTab: ->
     console.log('TODO')
