@@ -16,6 +16,7 @@ class View
       html: true
     )
 
+    @currentTab = null
     @render()
 
   setHeight: (height) ->
@@ -28,6 +29,13 @@ class View
     d3.selectAll('.volatile').remove()
     @top()
     @[tab + 'Tab']()
+    @currentTab = tab
+
+  update: ->
+    @render(@currentTab)
+
+  @showRef: ->
+    $('#show-ref').prop('checked')
 
   top: ->
     window.scrollTo(0, 0)
@@ -85,27 +93,26 @@ class View
     maxY = 0
 
     for k,d of data
-      if d.length > 2
-        row = Math.floor(counter / numberOfColumns)
-        column = counter % numberOfColumns
+      row = Math.floor(counter / numberOfColumns)
+      column = counter % numberOfColumns
 
-        counter += 1
-        nodeGroup = @selection.append('g')
-          .attr('class', 'bubble-' + counter)
-          .attr('transform', =>
-            rx = column * columnSize + (if column > 0 then 0 else marginSize)
-            ry = row * rowSize + (2 * marginSize)
-            maxY = ry if maxY < ry
-            "translate(#{rx},#{ry})")
+      counter += 1
+      nodeGroup = @selection.append('g')
+        .attr('class', 'bubble-' + counter)
+        .attr('transform', =>
+          rx = column * columnSize + (if column > 0 then 0 else marginSize)
+          ry = row * rowSize + (2 * marginSize)
+          maxY = ry if maxY < ry
+          "translate(#{rx},#{ry})")
 
-        bubble = new Bubble(nodeGroup.selectAll('g.bubble').data(d).enter())
-        bubble.byDefault(columnSize, rowSize)
+      bubble = new Bubble(nodeGroup.selectAll('g.bubble').data(d).enter())
+      bubble.byDefault(columnSize, rowSize)
 
-        criteriaText = new Text(nodeGroup)
-        criteriaText.text(Criteria.hashMap[k])
-        criteriaText.translate(marginSize, 0)
-        criteriaText.show()
-        @scrollLock(false)
+      criteriaText = new Text(nodeGroup)
+      criteriaText.text(Criteria.hashMap[k])
+      criteriaText.translate(marginSize, 0)
+      criteriaText.show()
+      @scrollLock(false)
     
     @setHeight(maxY + rowSize)
 

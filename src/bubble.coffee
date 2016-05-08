@@ -7,6 +7,7 @@ class Bubble
       .attr('title', @title)
       .attr('data-content', @dataContent)
       .attr('data-placement', @placement)
+      .attr('opacity', @opacity)
       .on('mouseover', @mouseover)
       .on('mouseout', @mouseout)
       .on('click', @click)
@@ -29,6 +30,10 @@ class Bubble
   hide: ->
     @circle.hide()
     @label.hide()
+
+  opacity: (data) =>
+    return 1 if View.showRef()
+    if (data.group == 'SPEC' or data.group == 'CW') then 0 else 1
 
   mouseover: (x) ->
     bubble = d3.select(this)
@@ -108,7 +113,6 @@ class Bubble
       .on('tick', tick)
       .on('end', end)
       .start()
-
     @
 
   boundary: ->
@@ -155,8 +159,6 @@ class Bubble
 
     for category in Bubble.categories
       text = new Text(View.currentInstance.element)
-      # text.text(group)
-      # text.translate(columns(group), 200)
 
     @selection.transition()
     .duration(3000)

@@ -3,4 +3,7 @@ table = new Table('data.csv', ->
   $('[data-view]').click(->
     view.render($(this).data('view'))
   )
+  $('#show-ref').click(->
+    view.update()
+  )
 )
