@@ -30,6 +30,7 @@ class View
     tab = 'default' unless tab?
     d3.selectAll('g').remove()
     d3.selectAll('.volatile').remove()
+    @top()
     @[tab + 'Tab']()
 
   top: ->
@@ -66,17 +67,19 @@ class View
   scoreTab: ->
     console.log('TODO score')
 
-  criteriaTab: ->
-    criteriaGroup = {}
+  getDataGroupedByCriteria: ->
+    dataGroup = {}
     for k,_ of Criteria.hashMap
-      criteriaGroup[k] = [] unless criteriaGroup[k]?
+      dataGroup[k] = [] unless dataGroup[k]?
       for row in @data
         clonedRow = {}
         for f,v of row
           clonedRow[f] = v
         if k in row.criteriaKeys
-          criteriaGroup[k].push(clonedRow)
+          dataGroup[k].push(clonedRow)
+    dataGroup
 
+  buildBubbleGroups: (data) ->
     counter = 0
     marginSize = 50
     numberOfColumns = Math.ceil((@width - (2 * marginSize)) / 600)
@@ -85,7 +88,7 @@ class View
     rowSize = @height / numberOfRows
     maxY = 0
 
-    for k,d of criteriaGroup
+    for k,d of data
       if d.length > 2
         row = Math.floor(counter / numberOfColumns)
         column = counter % numberOfColumns
@@ -110,5 +113,21 @@ class View
     
     @setHeight(maxY + rowSize)
 
+  criteriaTab: ->
+    @buildBubbleGroups(@getDataGroupedByCriteria())
+
   popularityTab: ->
-    console.log('TODO')
+    data = @getDataGroupedByCriteria()
+
+    sortable = []
+    for k,d of data
+      sortable.push([k,d.length])
+    sortable.sort((a,b) -> a[1] - b[1])
+    sortable.reverse()
+    
+    sortedData = {}
+    for j in sortable
+      k = j[0]
+      sortedData[k] = data[k]
+      
+    @buildBubbleGroups(sortedData)
