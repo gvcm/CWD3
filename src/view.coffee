@@ -17,10 +17,6 @@ class View
     )
 
     @render()
-    View._instance = @
-
-  @getSelection: ->
-    View._instance.selection
 
   setHeight: (height) ->
     @$container.height(height)

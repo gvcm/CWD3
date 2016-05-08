@@ -135,9 +135,10 @@ class Bubble
   byCategory: (width, height) ->
     posy = {}
     columns = Bubble.columns(width)
+    svg = d3.select('svg')
 
     for category in Bubble.categories
-      text = new Text(View.getSelection())
+      text = new Text(svg)
       text.text(category)
       text.translate(columns(category), 200)
 
