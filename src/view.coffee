@@ -71,7 +71,31 @@ class View
     @scrollLock(false)
 
   scoreTab: ->
-    console.log('TODO score')
+    @top()
+    total = new Text(@selection)
+    positionY = 250
+
+    for k,v of Criteria.hashMap
+      criteriaText = new Text(@selection)
+      criteriaText.text(v)
+      criteriaText.translate(50, positionY)
+      criteriaText.show()
+      positionY += 100
+    
+    @setHeight(positionY + 250)
+    
+    positionX = 500
+    criteriaText = new Text(@selection)
+    criteriaText.text('TOTAL')
+    criteriaText.translate(positionX, 200)
+    positionX += 100
+    
+    for n in [1...6] by 1
+      criteriaText = new Text(@selection)
+      criteriaText.text('score ' + n)
+      criteriaText.translate(positionX, 200)
+      criteriaText.show()
+      positionX += 100
 
   getDataGroupedByCriteria: ->
     dataGroup = {}
