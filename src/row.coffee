@@ -3,13 +3,12 @@ class Row
     @scoreN = parseInt(record.scoreN, 10)
     @value = (Row.weightScale(@scoreN) + 1) # pack layout
     @score = []
+    @scoreXN = []
     for num in [1..5]
       str = record['score' + num]
-      if str.length == 0
-        score = 0
-      else
-        score = parseInt(str, 10)
-      @score[num - 1] = score
+      @score[num - 1] = if str.length == 0 then 0 else parseInt(str, 10)
+      str = record['score' + num + 'N']
+      @scoreXN[num - 1] = if str.length == 0 then 0 else parseInt(str, 10)
     @total = parseInt(record.score, 10)
     @title = record.software
     @group = record.group

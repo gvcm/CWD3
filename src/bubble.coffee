@@ -175,3 +175,6 @@ class Bubble
       posy[data.group] = if posy[data.group]? then posy[data.group] + Math.sqrt(data.value * 500) else 1
       "translate(#{columns(data.group)},#{posy[data.group] + 300})"
     )
+
+  byPoints: (width, height) ->
+    

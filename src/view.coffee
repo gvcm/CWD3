@@ -70,32 +70,65 @@ class View
     @setHeight(14000)
     @scrollLock(false)
 
+  getSoftwareTitles: ->
+    softwareTitles = []
+    for row in @data
+      if row.group in ['SPEC','CW','T']
+        softwareTitles.push(row.title)
+    softwareTitles
+
+  getScoreData: ->
+    dataByScore = []
+    for y,row of @data
+      yInteger = parseInt(y)
+      if row.group in ['SPEC','CW','T']
+        dataByScore.push(
+          r: row.scoreN
+          x: 0
+          y: yInteger
+        )
+      for n in [1...6] by 1
+        dataByScore.push(
+          r: row.scoreXN[n-1]
+          x: n
+          y: yInteger
+        )
+    dataByScore
+
   scoreTab: ->
     @top()
+    @scrollLock(true)
+
+    score = new Score(@selection.selectAll('g').data(@getScoreData()).enter())
+    score.byDefault(@width, @height)
+
     total = new Text(@selection)
     positionY = 250
 
-    for k,v of Criteria.hashMap
+    for title in @getSoftwareTitles()
       criteriaText = new Text(@selection)
-      criteriaText.text(v)
+      criteriaText.text(title)
       criteriaText.translate(50, positionY)
       criteriaText.show()
       positionY += 100
     
-    @setHeight(positionY + 250)
+    columnSize = @width / 10
     
     positionX = 500
     criteriaText = new Text(@selection)
     criteriaText.text('TOTAL')
     criteriaText.translate(positionX, 200)
-    positionX += 100
+    positionX += columnSize
     
     for n in [1...6] by 1
       criteriaText = new Text(@selection)
       criteriaText.text('score ' + n)
       criteriaText.translate(positionX, 200)
       criteriaText.show()
-      positionX += 100
+      positionX += columnSize
+
+    @setHeight(positionY + 250)
+    @scrollLock(false)
 
   getDataGroupedByCriteria: ->
     dataGroup = {}
