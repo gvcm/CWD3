@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CWD3</title>
+    <link href="css/build.min.css" rel="stylesheet">
+    <style>
+      body { overflow-x: hidden; }
+    </style>
+  </head>
+  <body>
+    <div class="navbar navbar-fixed-top">
+      <div class="container">
+        <div class="row">
+          <div class="col-xs-12">
+            <div class="panel panel-default">
+              <div class="panel-body">
+                <div class="btn-group" role="group" aria-label="">
+                  <button type="button" class="btn btn-default" data-view="default">All IUCR Refences</button>
+                  <button type="button" class="btn btn-default" data-view="category">Sistematic Review: Funneling</button>
+                  <button type="button" class="btn btn-default" data-view="score">Sistematic Review: Ranking</button>
+                  <button type="button" class="btn btn-default" data-view="criteria">Sistematic Review: Criteria Listing</button>
+                  <button type="button" class="btn btn-default" data-view="popularity">Sistematic Review: Criteria Scoring Top-Down</button>
+                </div>
+                <div class="checkbox" style="float:right">
+                  <label>
+                    <input type="checkbox" id="show-ref" checked> Display CrystalWalk / Gold Specification Standard?
+                  </label>
+                  <label>
+                    <a href='CWD3v2.zip' target='_blank'>CWD3v2.01</a> &nbsp; <a href='CWD3v1.html' target='_blank'>CWD3v1 (deprecated)</a> 
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12" id="view"></div>
+    </div>
+    <script src="js/build.min.js"></script>
+  </body>
+</html>
